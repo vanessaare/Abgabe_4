@@ -24,7 +24,14 @@ class Person:
         return today - self.date_of_birth
 
     def calc_max_heart_rate(self):
-        return 220 - self.get_age()
+        age = self.get_age()
+
+        if self.gender == "Male":
+            return 220 - age
+        elif self.gender == "Female":
+            return 226 - age
+        else:
+            return 220 - age 
 
     def get_full_name(self):
         return self.lastname + ", " + self.firstname
