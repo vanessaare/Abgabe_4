@@ -48,12 +48,12 @@ option = st.radio(
 
 if option == "Durchschnittspuls berechnen":
     st.subheader("Durchschnittspuls berechnen")
-    avg_hr = calculate_average_heart_rate(selected_person)
+    avg_hr = selected_person.calculate_heart_rate()
     st.write(f"Der durchschnittliche Puls beträgt: **{avg_hr:.2f} bpm**")
 
 elif option == "EKG-Grafik anzeigen":
     st.subheader("EKG-Grafik anzeigen")
-    fig = plot_ekg(selected_person)
+    fig = plot_with_peaks(selected_person)
     st.pyplot(fig)
 
 
