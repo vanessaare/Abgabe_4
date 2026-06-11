@@ -25,13 +25,14 @@ class EKGdata:
         self.peaks, _ = find_peaks(self.df["Messwerte in mV"],height=height, distance=distance)
         return self.peaks
     
-    def estimate_hr(self):
-        if self.peaks is None:
+    def calculate_heart_rate(self):
+        if not hasattr(self, "peaks"):
             self.find_peaks()
-            
         peak_times = self.df["Zeit in ms"].iloc[self.peaks].values
         rr_intervals = np.diff(peak_times)  
         avg_rr = np.mean(rr_intervals)
+        bpm = 60000 / avg_rr  
+        return bpm
     
     def plot_with_peaks(self):
         fig = px.line(
