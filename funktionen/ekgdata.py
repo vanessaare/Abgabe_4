@@ -1,4 +1,3 @@
-import json
 import pandas as pd
 import plotly.express as px
 from scipy.signal import find_peaks
@@ -53,18 +52,18 @@ class EKGdata:
         return bpm
     
     def plot_with_peaks(self):
-    fig = px.line(
-        self.df.head(2000),
-        x="Zeit in ms",
-        y="Messwerte in mV"
-    )
-
-    if hasattr(self, "peaks"):
-        fig.add_scatter(
-            x=self.df["Zeit in ms"].iloc[self.peaks],
-            y=self.df["Messwerte in mV"].iloc[self.peaks],
-            mode="markers",
-            name="Peaks"
+        fig = px.line(
+            self.df.head(2000),
+            x="Zeit in ms",
+            y="Messwerte in mV"
         )
 
-    return fig
+        if hasattr(self, "peaks"):
+            fig.add_scatter(
+                x=self.df["Zeit in ms"].iloc[self.peaks],
+                y=self.df["Messwerte in mV"].iloc[self.peaks],
+                mode="markers",
+                name="Peaks"
+            )
+
+        return fig
