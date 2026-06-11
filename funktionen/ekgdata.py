@@ -1,8 +1,8 @@
 import pandas as pd
 from Abgabe_4.backend import person
 import plotly.express as px
-from scipy.signal import find_peaks
 import numpy as np
+from funktionen.peak_detection import peak_detection
 
 class EKGdata:
     def __init__(self, ekg_dict):
@@ -30,8 +30,12 @@ class EKGdata:
         )
         return self.fig
 
-    def find_peaks(self, height=0.5, distance=200):
-        self.peaks, _ = find_peaks(self.df["Messwerte in mV"],height=height, distance=distance)
+    def find_peaks(self, threshold=0.5, respacing_factor=5):
+        self.peaks = peak_detection(
+            self.df["Messwerte in mV"],
+            threshold,
+            respacing_factor
+        )
         return self.peaks
     
     def estimate_hr(self):
