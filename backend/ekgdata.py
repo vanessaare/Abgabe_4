@@ -1,5 +1,4 @@
 import pandas as pd
-from backend import person
 import plotly.express as px
 import numpy as np
 from funktionen.peak_detection import peak_detection

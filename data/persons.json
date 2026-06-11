@@ -21,7 +21,7 @@
         "date_of_birth": 1998,
         "firstname": "Lukas",
         "lastname": "Huber",
-        "picture_path": "data/images/Person2_male.jpg",
+        "picture_path": "data/images/Person2_male.webp",
         "ekg_tests": [
             {
                 "id": 102,
@@ -38,7 +38,7 @@
         "date_of_birth": 2003,
         "firstname": "Sophie",
         "lastname": "Gruber",
-        "picture_path": "data/images/Person2_female.jpg",
+        "picture_path": "data/images/Person2_female.webp",
         "ekg_tests": [
             {
                 "id": 103,
@@ -55,7 +55,7 @@
         "date_of_birth": 1995,
         "firstname": "David",
         "lastname": "Schneider",
-        "picture_path": "data/images/Person2_male.jpg",
+        "picture_path": "data/images/Person2_male.webp",
         "ekg_tests": [
             {
                 "id": 104,
@@ -73,7 +73,7 @@
         "date_of_birth": 2000,
         "firstname": "Laura",
         "lastname": "Berger",
-        "picture_path": "data/images/Person3_female.jpg",
+        "picture_path": "data/images/Person3_female.webp",
         "ekg_tests": [
             {
                 "id": 105,
@@ -90,7 +90,7 @@
         "date_of_birth": 1997,
         "firstname": "Michael",
         "lastname": "Wagner",
-        "picture_path": "data/images/Person3_male.jpg",
+        "picture_path": "data/images/Person3_male.webp",
         "ekg_tests": [
             {
                 "id": 106,

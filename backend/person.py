@@ -1,7 +1,9 @@
+from backend.ekgdata import EKGdata
 import json
 from PIL import Image
 import datetime 
 today = datetime.date.today().year
+
 
 class Person:
 
@@ -72,5 +74,9 @@ class Person:
                  "Gender": self.get_gender(),
                  "Max Heart Rate": self.calc_max_heart_rate()
                  }  
+    def get_first_ekg(self):
+        if not self.has_ekg_data():
+            return None
+        return EKGdata(self.ekg_tests[0])
 
     

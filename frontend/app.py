@@ -1,20 +1,9 @@
-from Abgabe_4.backend import person
-from Abgabe_4.funktionen import peak_detection
 import streamlit as st
 from backend.person import Person 
-from Abgabe_4.backend.ekgdata import EKGData, EKGdata
-from peak_detection import peak_detection
+from backend.ekgdata import EKGdata
 
 
 persons = Person.load_persons() #Liste mit den 6 Person-Objekten
-ekg_dict = selected_person.ekg_tests[0]
-ekg = EKGdata(ekg_dict)
-
-#aufpassen funktionenbennenung passt noch nicht zu unseren daten!!!
-#streamlit seite aufbauen
-
-st.set_page_config(page_title="EKG Dashboard", layout="centered") 
-st.title("EKG Analyse Dashboard")
 
 
 
@@ -42,7 +31,7 @@ def show_person(selected_person):
     col1, col2 = st.columns([1, 2])
     with col1:
         if selected_person.picture_path:
-            st.image(selected_person.picture_path, width=200)
+            st.image(selected_person.get_image(), width=200)
         else:
             st.info("Kein Bild vorhanden.")
     with col2:
@@ -74,17 +63,35 @@ def select_analysis():
 
 
 def run_analysis(option, selected_person):
+
     if option == "Durchschnittspuls berechnen":
         st.subheader("Durchschnittspuls berechnen")
 
-        bpm = person.calculate_heart_rate()
+        ekg = EKGdata(selected_person.ekg_tests[0])
+        bpm = ekg.estimate_hr()
+
         st.write(f"Der durchschnittliche Puls beträgt: **{bpm:.2f} bpm**")
 
     elif option == "EKG-Grafik anzeigen":
         st.subheader("EKG-Grafik anzeigen")
+
+        ekg_dict = selected_person.ekg_tests[0]
+        ekg = EKGdata(ekg_dict)
+
         fig = ekg.plot_with_peaks()
-        st.pyplot(fig)
+        st.plotly_chart(fig)
+        
+
+def main():
+    persons = Person.load_persons()
+
+    selected_person = select_person(persons)
+    show_person(selected_person)
+
+    check_ekg_data(selected_person)
+
+    option = select_analysis()
+    run_analysis(option, selected_person)
 
 
-
-
+main()
