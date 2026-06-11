@@ -1,6 +1,7 @@
 import streamlit as st
 from backend.person import Person 
 from funktionen.ekgdata import EKGData
+from backend.utils.read_data import load_all_persons
 
 
 
