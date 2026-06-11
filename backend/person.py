@@ -46,19 +46,23 @@ class Person:
         self.hr_max = 220 - (today-int(date_of_birth))
         self.gender = gender
 
+    @staticmethod   
+    def load_person_data():
+        file = open("data/person_db.json")
+        person_data = json.load(file)
+        return person_data
 
     def get_age(self):        
         return today - self.date_of_birth
 
-    def set_hr(self, hr):
-        self.hr_max = hr
+    def calc_max_heart_rate(self):
+        return 220 - self.get_age()
 
     def get_full_name(self):
         return self.lastname + ", " + self.firstname
 
     def get_image(self):
-        image = Image.open(self.picture_path)
-        return image
+        return Image.open(self.picture_path)
     
     def get_gender(self):
         return self.gender
@@ -75,13 +79,7 @@ class Person:
         return {"Name": self.get_full_name(),
                  "Age": self.get_age(),
                  "Gender": self.get_gender(),
-                 "Max Heart Rate": self.hr_max()
+                 "Max Heart Rate": self.calc_max_heart_rate()
                  }  
 
-
-if __name__ == "__main__":
-    print("This is a module with some functions to read the person data")
-    persons = Person.load_person_data()
-    person_names = Person.get_person_list(persons)
-    print(person_names)
-    print(Person.find_person_data_by_name("Huber, Julian"))
+    
