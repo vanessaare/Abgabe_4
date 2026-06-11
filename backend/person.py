@@ -5,7 +5,7 @@ today = datetime.date.today().year
 
 class Person:
 
-    def __init__(self, id : int, date_of_birth : int, firstname, lastname, picture_path, ekg_tests, gender = "Male"):
+    def __init__(self, id : int, date_of_birth : int, firstname : str, lastname : str, picture_path : str, ekg_tests : list, gender = "Male"):
         self.id = id
         self.date_of_birth = date_of_birth
         self.firstname = firstname
@@ -28,10 +28,8 @@ class Person:
 
         if self.gender == "Male":
             return 220 - age
-        elif self.gender == "Female":
+        else:  # self.gender == "Female"
             return 226 - age
-        else:
-            return 220 - age 
 
     def get_full_name(self):
         return self.lastname + ", " + self.firstname

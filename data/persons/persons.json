@@ -1,0 +1,103 @@
+[
+    {
+        "id": 1,
+        "date_of_birth": 2001,
+        "firstname": "Anna",
+        "lastname": "Mayer",
+        "picture_path": "data/images/Person1_female.jpg",
+        "ekg_tests": [
+            {
+                "id": 101,
+                "date": "2026-05-10",
+                "result_link": "data/ekg_data/01_Ruhe.txt"
+            }
+        ],
+        "gender": "Female"
+    },
+
+
+    {
+        "id": 2,
+        "date_of_birth": 1998,
+        "firstname": "Lukas",
+        "lastname": "Huber",
+        "picture_path": "data/images/Person2_male.jpg",
+        "ekg_tests": [
+            {
+                "id": 102,
+                "date": "2026-04-22",
+                "result_link": "data/ekg_data/02_Ruhe.txt"
+            }
+        ],
+        "gender": "Male"
+    },
+
+
+    {
+        "id": 3,
+        "date_of_birth": 2003,
+        "firstname": "Sophie",
+        "lastname": "Gruber",
+        "picture_path": "data/images/Person2_female.jpg",
+        "ekg_tests": [
+            {
+                "id": 103,
+                "date": "2026-08-22",
+                "result_link": "data/ekg_data/03_Ruhe.txt"
+            }
+        ],
+        "gender": "Female"
+    },
+
+
+    {
+        "id": 4,
+        "date_of_birth": 1995,
+        "firstname": "David",
+        "lastname": "Schneider",
+        "picture_path": "data/images/Person2_male.jpg",
+        "ekg_tests": [
+            {
+                "id": 104,
+                "date": "2026-03-15",
+                "result_link": "data/ekg_data/04_Belastung.txt"
+            }
+        
+        ],
+        "gender": "Male"
+    },
+
+
+    {
+        "id": 5,
+        "date_of_birth": 2000,
+        "firstname": "Laura",
+        "lastname": "Berger",
+        "picture_path": "data/images/Person3_female.jpg",
+        "ekg_tests": [
+            {
+                "id": 105,
+                "date": "2026-02-18",
+                "result_link": "data/ekg_data/05_Belastung.txt"
+            }
+        ],
+        "gender": "Female"
+    },
+
+
+    {
+        "id": 6,
+        "date_of_birth": 1997,
+        "firstname": "Michael",
+        "lastname": "Wagner",
+        "picture_path": "data/images/Person3_male.jpg",
+        "ekg_tests": [
+            {
+                "id": 106,
+                "date": "2026-02-16",
+                "result_link": "data/ekg_data/activity.csv"
+            }
+        ],
+        "gender": "Male"
+    }
+]
