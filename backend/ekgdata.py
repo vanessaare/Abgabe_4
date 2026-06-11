@@ -1,5 +1,5 @@
 import pandas as pd
-from Abgabe_4.backend import person
+from backend import person
 import plotly.express as px
 import numpy as np
 from funktionen.peak_detection import peak_detection
@@ -47,17 +47,22 @@ class EKGdata:
         bpm = 60000 / avg_rr  
         return bpm
     
+
+
     def plot_with_peaks(self):
+        if not hasattr(self, "peaks"):
+            self.find_peaks()
+
         fig = px.line(
             self.df.head(2000),
             x="Zeit in ms",
             y="Messwerte in mV"
         )
-        if hasattr(self, "peaks"):
-            fig.add_scatter(
-                x=self.df["Zeit in ms"].iloc[self.peaks],
-                y=self.df["Messwerte in mV"].iloc[self.peaks],
-                mode="markers",
-                name="Peaks"
-            )
+        fig.add_scatter(
+            x=self.df["Zeit in ms"].iloc[self.peaks],
+            y=self.df["Messwerte in mV"].iloc[self.peaks],
+            mode="markers",
+            name="Peaks"
+        )
+
         return fig

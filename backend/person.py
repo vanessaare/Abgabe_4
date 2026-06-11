@@ -15,10 +15,28 @@ class Person:
         self.gender = gender
 
     @staticmethod   
-    def load_person_data():
-        file = open("data/person_db.json")
-        person_data = json.load(file)
-        return person_data
+    def load_persons():
+        with open("data/persons.json", "r", encoding="utf-8") as file:
+            person_data = json.load(file)
+
+        persons = []
+
+        for person_dict in person_data:
+            person = Person(
+                person_dict["id"],
+                person_dict["date_of_birth"],
+                person_dict["firstname"],
+                person_dict["lastname"],
+                person_dict["picture_path"],
+                person_dict["ekg_tests"],
+                person_dict["gender"]
+            )
+            persons.append(person)
+
+        return persons
+
+
+
 
     def get_age(self):        
         return today - self.date_of_birth
