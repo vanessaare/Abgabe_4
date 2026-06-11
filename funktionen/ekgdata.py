@@ -1,4 +1,5 @@
 import pandas as pd
+from Abgabe_4.backend import person
 import plotly.express as px
 from scipy.signal import find_peaks
 import numpy as np
@@ -11,6 +12,14 @@ class EKGdata:
         self.data = ekg_dict["result_link"]
         self.df = pd.read_csv(self.data, sep='\t', header=None, names=['Messwerte in mV','Zeit in ms',])
         self.df = self.df.iloc[:5000]  
+
+    @staticmethod
+    def load_by_id(test_id: int, person_database: list):
+        for person in person_database:
+            for test in person.get("ekg_tests", []):
+                if test["id"] == test_id:
+                    return EKGdata(test) 
+        return None
 
     def plot_time_series(self):
         self.fig = px.line(
@@ -25,7 +34,7 @@ class EKGdata:
         self.peaks, _ = find_peaks(self.df["Messwerte in mV"],height=height, distance=distance)
         return self.peaks
     
-    def calculate_heart_rate(self):
+    def estimate_hr(self):
         if not hasattr(self, "peaks"):
             self.find_peaks()
         peak_times = self.df["Zeit in ms"].iloc[self.peaks].values
