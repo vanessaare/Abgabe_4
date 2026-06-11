@@ -1,6 +1,8 @@
 import json
 import pandas as pd
 import plotly.express as px
+from scipy.signal import find_peaks
+import numpy as np
 
 # %% Objekt-Welt
 
@@ -20,17 +22,49 @@ class EKGdata:
 
 
     def plot_time_series(self):
+        self.fig = px.line(
+            self.df.head(2000),
+            x="Zeit in ms",
+            y="Messwerte in mV",
+            title=f"EKG Signal {self.id}"
+        )
+        return self.fig
 
-        # Erstellte einen Line Plot, der ersten 2000 Werte mit der Zeit aus der x-Achse
-        self.fig = px.line(self.df.head(2000), x="Zeit in ms", y="Messwerte in mV")
-        #return self.fig 
+    def find_peaks(self, height=0.5, distance=200):
+        self.peaks, _ = find_peaks(
+            self.df["Messwerte in mV"],
+            height=height,
+            distance=distance
+        )
+        return self.peaks
+    
+    def calculate_heart_rate(self):
+        if not hasattr(self, "peaks"):
+            self.find_peaks()
 
+        peak_times = self.df["Zeit in ms"].iloc[self.peaks].values
 
-if __name__ == "__main__":
-    print("This is a module with some functions to read the EKG data")
-    file = open("data/person_db.json")
-    person_data = json.load(file)
-    ekg_dict = person_data[0]["ekg_tests"][0]
-    print(ekg_dict)
-    ekg = EKGdata(ekg_dict)
-    print(ekg.df.head())
+        rr_intervals = np.diff(peak_times)  # Abstand zwischen Peaks in ms
+
+        avg_rr = np.mean(rr_intervals)
+
+        bpm = 60000 / avg_rr  # ms → Minuten
+
+        return bpm
+    
+    def plot_with_peaks(self):
+    fig = px.line(
+        self.df.head(2000),
+        x="Zeit in ms",
+        y="Messwerte in mV"
+    )
+
+    if hasattr(self, "peaks"):
+        fig.add_scatter(
+            x=self.df["Zeit in ms"].iloc[self.peaks],
+            y=self.df["Messwerte in mV"].iloc[self.peaks],
+            mode="markers",
+            name="Peaks"
+        )
+
+    return fig
