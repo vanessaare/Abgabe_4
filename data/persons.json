@@ -95,7 +95,7 @@
             {
                 "id": 106,
                 "date": "2026-02-16",
-                "result_link": "data/ekg_data/activity.csv"
+                "result_link": "data/ekg_data/05_Belastung.txt"
             }
         ],
         "gender": "Male"

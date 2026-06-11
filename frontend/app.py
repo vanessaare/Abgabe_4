@@ -64,22 +64,29 @@ def select_analysis():
 
 def run_analysis(option, selected_person):
 
+    if not selected_person.ekg_tests:
+        st.error("Keine EKG-Daten vorhanden")
+        return
+    
+    ekg_data = selected_person.ekg_tests[0]
+
     if option == "Durchschnittspuls berechnen":
-        st.subheader("Durchschnittspuls berechnen")
+        try:
+            ekg = EKGdata(ekg_data)
+            bpm = ekg.estimate_hr()
+            st.write(f"Der durchschnittliche Puls beträgt: **{bpm:.2f} bpm**")
 
-        ekg = EKGdata(selected_person.ekg_tests[0])
-        bpm = ekg.estimate_hr()
-
-        st.write(f"Der durchschnittliche Puls beträgt: **{bpm:.2f} bpm**")
+        except Exception as e:
+            st.error(f"Fehler beim Schätzen der Herzfrequenz: {e}")
+    
 
     elif option == "EKG-Grafik anzeigen":
-        st.subheader("EKG-Grafik anzeigen")
-
-        ekg_dict = selected_person.ekg_tests[0]
-        ekg = EKGdata(ekg_dict)
-
-        fig = ekg.plot_with_peaks()
-        st.plotly_chart(fig)
+        try:
+            ekg = EKGdata(ekg_data)
+            fig = ekg.plot_with_peaks()
+            st.plotly_chart(fig)
+        except Exception as e:
+            st.error(f"Plot Fehler: {e}")
         
 
 def main():
