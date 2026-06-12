@@ -3,11 +3,46 @@ from backend.person import Person
 from backend.ekgdata import EKGdata
 
 
+if "page" not in st.session_state:
+    st.session_state.page = "home"
+
+if "selected_person" not in st.session_state:
+    st.session_state.selected_person = None
+
+
 persons = Person.load_persons() #Liste mit den 6 Person-Objekten
 
+#Navigation
+def go_to_person_select():
+    print("BUTTON GEDRÜCKT")
+    st.session_state.page = "select"
 
 
+def set_person(person):
+    st.session_state.selected_person = person
+    st.session_state.page = "analysis"
+
+
+def go_home():
+    st.session_state.page = "home"
+    st.session_state.selected_person = None
+
+#Startseite
+def home():
+    st.title("Willkommen in Ihrer digitalen EKG-Datenbank🫀")
+
+    st.write("Starten Sie die Analyse der Patientendaten!")
+
+    if st.button("Auf los gehts los🚀"):
+        st.write("BUTTON WURDE GEDRÜCKT")
+        st.session_state.page = "select"
+        st.rerun()
+
+
+
+#Patient auswählen
 def select_person(persons):
+    st.write("SELECT_PERSON WURDE AUFGERUFEN")
     st.header("Patient auswählen")
 
     person_names = [p.get_full_name() for p in persons]
@@ -17,14 +52,14 @@ def select_person(persons):
         person_names
     )
 
-    return next(
-        p for p in persons 
-        if p.get_full_name() == selected_name
-    )
+    person = [p for p in persons if p.get_full_name() == selected_name][0]
+
+    if st.button("Weiter"):
+        set_person(person)
 
 
 
-
+#Patient ansehen
 def show_person(selected_person):
     st.header("Patient anzeigen")
 
@@ -40,9 +75,11 @@ def show_person(selected_person):
         st.write(f"**Geschlecht:** {selected_person.gender}")
         st.write(f"**HR_max:** {selected_person.calc_max_heart_rate()} bpm")
 
+    st.button("⬅ Zurück", on_click=go_home)
 
 
 
+#EKG checken
 def check_ekg_data(selected_person):
     st.header("EKG Daten überprüfen")
 
@@ -52,7 +89,7 @@ def check_ekg_data(selected_person):
     st.success("EKG-Daten vorhanden!")
 
 
-
+# EKG Analyse
 def select_analysis(): 
     st.header("Analyse auswählen")
     return st.radio(
@@ -63,10 +100,12 @@ def select_analysis():
 
 
 def run_analysis(option, selected_person):
+    st.write("DEBUG PERSON:", st.session_state.selected_person)
+    st.write("DEBUG EKGS:", getattr(st.session_state.selected_person, "ekg_tests", None))
 
     if not selected_person.ekg_tests:
         st.error("Keine EKG-Daten vorhanden")
-        return
+        st.stop()
     
     ekg_data = selected_person.ekg_tests[0]
 
@@ -89,16 +128,31 @@ def run_analysis(option, selected_person):
             st.error(f"Plot Fehler: {e}")
         
 
+
+#Router
 def main():
-    persons = Person.load_persons()
+    if st.session_state.page == "home":
+        home()
 
-    selected_person = select_person(persons)
-    show_person(selected_person)
+    elif st.session_state.page == "select":
+        st.title("👤 Patientenauswahl")
+        st.write("Bitte wählen Sie einen Patienten aus:")
+        select_person(persons)
+        
 
-    check_ekg_data(selected_person)
 
-    option = select_analysis()
-    run_analysis(option, selected_person)
+    elif st.session_state.page == "analysis":
+        person = st.session_state.selected_person
 
+        if person is None:
+            st.error("Kein Patient ausgewählt. Bitte zurückgehen.")
+            st.session_state.page = "select"
+            st.stop()
+
+        show_person(person)
+        check_ekg_data(person)
+
+        option = select_analysis()
+        run_analysis(option, person)
 
 main()
