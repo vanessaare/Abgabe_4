@@ -55,13 +55,19 @@ class EKGdata:
         fig = px.line(
             self.df.head(2000),
             x="Zeit in ms",
-            y="Messwerte in mV"
+            y="Messwerte in mV",
+            title=f"EKG Signal {self.id} mit Peaks"
         )
         fig.add_scatter(
             x=self.df["Zeit in ms"].iloc[self.peaks],
             y=self.df["Messwerte in mV"].iloc[self.peaks],
             mode="markers",
             name="Peaks"
+        )
+        fig.update_layout(
+            xaxis_title="Zeit in ms",
+            yaxis_title="Messwerte in mV",
+            height=500,
         )
 
         return fig

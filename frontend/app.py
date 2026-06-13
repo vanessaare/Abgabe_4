@@ -83,7 +83,7 @@ def show_person(selected_person):
 def check_ekg_data(selected_person):
     st.header("EKG Daten überprüfen")
 
-    if not Person.has_ekg_data(selected_person):
+    if not selected_person.has_ekg_data():
         st.error("❌ Keine EKG-Daten vorhanden. Bitte einen anderen Patienten auswählen.")
         st.stop()
     st.success("EKG-Daten vorhanden!")
@@ -123,7 +123,7 @@ def run_analysis(option, selected_person):
         try:
             ekg = EKGdata(ekg_data)
             fig = ekg.plot_with_peaks()
-            st.plotly_chart(fig)
+            st.plotly_chart(fig, use_container_width=True)
         except Exception as e:
             st.error(f"Plot Fehler: {e}")
         
@@ -155,4 +155,5 @@ def main():
         option = select_analysis()
         run_analysis(option, person)
 
-main()
+if __name__ == "__main__":
+    main()

@@ -1,1 +1,3 @@
-import frontend.app
+from frontend.app import main
+
+main()
