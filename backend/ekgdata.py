@@ -21,12 +21,17 @@ class EKGdata:
         return None
 
     def plot_time_series(self):
+        plot_df = self.df.head(2000)
         self.fig = px.line(
-            self.df.head(2000),
+            plot_df,
             x="Zeit in ms",
             y="Messwerte in mV",
             title=f"EKG Signal {self.id}"
         )
+        if not plot_df.empty:
+            self.fig.update_xaxes(
+                range=[plot_df["Zeit in ms"].iloc[0], plot_df["Zeit in ms"].iloc[-1]]
+            )
         return self.fig
 
     def find_peaks(self, threshold=0.5, respacing_factor=5):
@@ -52,18 +57,29 @@ class EKGdata:
         if not hasattr(self, "peaks"):
             self.find_peaks()
 
+        plot_df = self.df.head(2000)
         fig = px.line(
-            self.df.head(2000),
+            plot_df,
             x="Zeit in ms",
             y="Messwerte in mV",
             title=f"EKG Signal {self.id} mit Peaks"
         )
-        fig.add_scatter(
-            x=self.df["Zeit in ms"].iloc[self.peaks],
-            y=self.df["Messwerte in mV"].iloc[self.peaks],
-            mode="markers",
-            name="Peaks"
-        )
+
+        peak_indices = [i for i in self.peaks if i < len(plot_df)]
+        if peak_indices:
+            fig.add_scatter(
+                x=plot_df["Zeit in ms"].iloc[peak_indices],
+                y=plot_df["Messwerte in mV"].iloc[peak_indices],
+                mode="markers",
+                marker=dict(color="red", size=6),
+                name="Peaks"
+            )
+
+        if not plot_df.empty:
+            fig.update_xaxes(
+                range=[plot_df["Zeit in ms"].iloc[0], plot_df["Zeit in ms"].iloc[-1]]
+            )
+
         fig.update_layout(
             xaxis_title="Zeit in ms",
             yaxis_title="Messwerte in mV",

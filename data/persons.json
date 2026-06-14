@@ -21,7 +21,7 @@
         "date_of_birth": 1998,
         "firstname": "Lukas",
         "lastname": "Huber",
-        "picture_path": "data/images/Person2_male.webp",
+        "picture_path": "data/images/Person1_male.webp",
         "ekg_tests": [
             {
                 "id": 102,
