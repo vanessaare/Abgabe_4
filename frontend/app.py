@@ -42,13 +42,12 @@ def home():
 
 #Patient auswählen
 def select_person(persons):
-    st.write("SELECT_PERSON WURDE AUFGERUFEN")
-    st.header("Patient auswählen")
+    st.header("Patient:in auswählen")
 
     person_names = [p.get_full_name() for p in persons]
 
     selected_name = st.selectbox(
-        "Bitte Patient auswählen:", 
+        "Bitte Patient:in auswählen:", 
         person_names
     )
 
@@ -61,7 +60,7 @@ def select_person(persons):
 
 #Patient ansehen
 def show_person(selected_person):
-    st.header("Patient anzeigen")
+    st.header("Patient:in anzeigen")
 
     col1, col2 = st.columns([1, 2])
     with col1:
@@ -100,9 +99,6 @@ def select_analysis():
 
 
 def run_analysis(option, selected_person):
-    st.write("DEBUG PERSON:", st.session_state.selected_person)
-    st.write("DEBUG EKGS:", getattr(st.session_state.selected_person, "ekg_tests", None))
-
     if not selected_person.ekg_tests:
         st.error("Keine EKG-Daten vorhanden")
         st.stop()
@@ -135,8 +131,6 @@ def main():
         home()
 
     elif st.session_state.page == "select":
-        st.title("👤 Patientenauswahl")
-        st.write("Bitte wählen Sie einen Patienten aus:")
         select_person(persons)
         
 
