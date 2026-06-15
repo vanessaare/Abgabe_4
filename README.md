@@ -2,9 +2,9 @@
 
 **Teilnehmerinnen:** Melanie Pfusterer, Lisa Raffler, Vanessa Reich
 
-Das Projekt erstellt eine mithilfe von Streamlit eine Webseite, die als eine Art Datenbank dienen soll. 
+Das Projekt erstellt eine mithilfe von Streamlit eine **Webseite**, die als eine Art Datenbank dienen soll. 
 In der man, verschiedene Probanden auswählen kann, diese dann angezeigen kann und weitere Attribute die zu diesen gehören ebenso zeigen. 
-Desweiteren wir aus den  EKG Daten (Ruhe-/Belastungsdaten)  ein **EKG Diagramm** erstellt. Die Werte werden aus den Dateien (*01_Ruhe.txt; 02_Ruhe.txt, 03_Ruhe.txt, 04_Belastung.txt, 05_Belastung.txt*) geladen, verarbeitet und anschließend in auf der Webseite für die Einzelnen Probanden dargestellt.
+Desweiteren wir ein **EKG Diagramm** erstellt bei den Probanden auf ihrer eigenen Datenseite. 
 
 Zur Installation des Projekts wird pip verwendet.
 
@@ -18,11 +18,16 @@ Zur Installation des Projekts wird pip verwendet.
 
 ## Was macht das Projekt?
 
-1. Leistungsdaten werden aus einer Datei (*activity.csv*) geladen und aussortiert.
-2. Für verschiedene Zeitdauern wird die maximale durchschnittliche Leistung berechnet.
-3. Die Ergebnisse werden in einem DataFrame gespeichert.
-4. Die Power Curve wird als Diagramm dargestellt.
-5. Die Grafik wird gespeichert.
+- Lädt EKG‑Rohdaten und Stammdaten aus dem data/‑Ordner.
+
+- Bereitet die EKG‑Signale auf und erkennt Peaks (R‑Zacken).
+
+- Visualisiert die EKG‑Kurven im Frontend (Streamlit‑Weboberfläche).
+
+- Zeigt Patient*inneninformationen und zugehörige Bilder an.
+
+- Ermöglicht die Auswahl verschiedener Datensätze über eine interaktive Oberfläche.
+
 
 ## Projektstruktur
 
@@ -56,5 +61,11 @@ Was man dann auch in die finale Abgabe noch mit einbauen könnte:
 - Vergleich zweier Personen
 - Mehrere EKGs pro Person als Timeline
 - Datensatzabgleichung mit Normwerten 
+
+## Die folgendes HeadUp wird für die Webseite erstellt:
+
+![Startbild](data/images/Startseite_EKGApp.png)
+![AuswahlPatient](data/images/Auswahl_Patienten.png)
+![Patient](data/images/PatientenSeite.png)
 
 
