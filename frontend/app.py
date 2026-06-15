@@ -33,8 +33,8 @@ def home():
 
     st.write("Starten Sie die Analyse der Patientendaten!")
 
-    if st.button("Auf los gehts los🚀"):
-        st.write("BUTTON WURDE GEDRÜCKT")
+    if st.button("Analyse starten"):
+        st.write("Analyse wird vorbereitet...")
         st.session_state.page = "select"
         st.rerun()
 
