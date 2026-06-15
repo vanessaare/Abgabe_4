@@ -2,9 +2,7 @@
 
 **Teilnehmerinnen:** Melanie Pfusterer, Lisa Raffler, Vanessa Reich
 
-Das Projekt erstellt eine mithilfe von Streamlit eine **Webseite**, die als eine Art Datenbank dienen soll. 
-In der man, verschiedene Probanden auswählen kann, diese dann angezeigen kann und weitere Attribute die zu diesen gehören ebenso zeigen. 
-Desweiteren wir ein **EKG Diagramm** erstellt bei den Probanden auf ihrer eigenen Datenseite. 
+Das Projekt erstellt mit Hilfe von Streamlit eine interaktive Webseite, die als digitale Datenbank für Probandinnen dient. Nutzer können verschiedene Personen auswählen, deren Stammdaten und zugehörige Attribute einsehen sowie auf einer individuellen Detailseite das jeweils passende EKG‑Diagramm anzeigen lassen.
 
 Zur Installation des Projekts wird pip verwendet.
 
@@ -33,24 +31,22 @@ Zur Installation des Projekts wird pip verwendet.
 
 * **main.py**
   Zentrales Startskript des Projekts. 
-  Hier wird der Gesamtworkflow initialisiert und die Verbindung zwischen Frontend, Backend und Funktionsmodulen hergestellt.
 
 * **backend/**
- Zentrales Startskript des Projekts.
- Hier wird der Gesamtworkflow initialisiert und die Verbindung zwischen Frontend, Backend und Funktionsmodulen hergestellt.
+Beinhaltet die Dateien zur Verarbeitung der EKG Daten sowie der Personen.
 
 * **frontend/**
   Beinhaltet die Benutzeroberfläche des Projekts.
-  app.py – Streamlit‑Anwendung, steuert Navigation, UI‑Elemente und Interaktionen
+  app.py – Streamlit‑Anwendung, steuert Navigation, UI‑Elemente und interaktive
  Darstellung der EKG‑Plots, Auswahlmenüs, Buttons, usw. 
 
 
 * **funktionen/**
   Sammelt spezialisierte Funktionsmodule, die unabhängig vom Backend genutzt werden können.
- peak_detection.py – Algorithmus zur Erkennung von Peaks in EKG‑Signalen (z. B. R‑Peaks)
+ peak_detection.py – Algorithmus zur Erkennung von Peaks in EKG‑Signalen
 
 * **data**
- Speicherort aller Rohdaten und Metadaten.
+ Speicherort aller Rohdaten.
  ekg_data/ – Textdateien mit Ruhe‑ und Belastungs‑EKGs
  activity.csv – Aktivitätsdaten
  persons.json – Stammdaten der Proband*innen
@@ -62,7 +58,7 @@ Was man dann auch in die finale Abgabe noch mit einbauen könnte:
 - Mehrere EKGs pro Person als Timeline
 - Datensatzabgleichung mit Normwerten 
 
-## Die folgendes HeadUp wird für die Webseite erstellt:
+##  Headup Webseite:
 
 ![Startbild](data/images/Startseite_EKGApp.png)
 ![AuswahlPatient](data/images/Auswahl_Patienten.png)
