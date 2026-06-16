@@ -55,6 +55,7 @@ def select_person(persons):
 
     if st.button("Weiter"):
         set_person(person)
+        st.rerun()
 
 
 
@@ -88,6 +89,17 @@ def check_ekg_data(selected_person):
     st.success("EKG-Daten vorhanden!")
 
 
+# Testnummer auswählen
+def select_test_nr(selected_person):
+    st.header("EKG Test auswählen")
+    test_numbers = [f"Test {i+1}" for i in range(len(selected_person.ekg_tests))]
+    selected_test = st.selectbox(
+        "Bitte EKG Test auswählen:", 
+        test_numbers
+    )
+    return test_numbers.index(selected_test)
+
+
 # EKG Analyse
 def select_analysis(): 
     st.header("Analyse auswählen")
@@ -98,12 +110,11 @@ def select_analysis():
 
 
 
-def run_analysis(option, selected_person):
+def run_analysis(option, selected_person, test_nr):
     if not selected_person.ekg_tests:
         st.error("Keine EKG-Daten vorhanden")
         st.stop()
-    
-    ekg_data = selected_person.ekg_tests[0]
+    ekg_data = selected_person.ekg_tests[test_nr]
 
     if option == "Durchschnittspuls berechnen":
         try:
@@ -146,8 +157,10 @@ def main():
         show_person(person)
         check_ekg_data(person)
 
+        test_nr = select_test_nr(person)  
+
         option = select_analysis()
-        run_analysis(option, person)
+        run_analysis(option, person, test_nr)
 
 if __name__ == "__main__":
     main()

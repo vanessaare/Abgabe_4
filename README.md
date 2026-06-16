@@ -14,7 +14,7 @@ Zur Installation des Projekts wird pip verwendet.
 2. Projekt starten
    **->** streamlit run main.py
 
-## Was macht das Projekt?
+## Was macht das Projekt? 
 
 - Lädt EKG‑Rohdaten und Stammdaten aus dem data/‑Ordner.
 

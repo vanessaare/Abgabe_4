@@ -34,7 +34,7 @@ class EKGdata:
             )
         return self.fig
 
-    def find_peaks(self, threshold=0.5, respacing_factor=5):
+    def find_peaks(self, threshold=350, respacing_factor=5):
         self.peaks = peak_detection(
             self.df["Messwerte in mV"],
             threshold,

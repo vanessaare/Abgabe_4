@@ -1,18 +1,23 @@
 [
     {
-        "id": 1,
-        "date_of_birth": 2001,
-        "firstname": "Anna",
-        "lastname": "Mayer",
-        "picture_path": "data/images/Person1_female.jpg",
-        "ekg_tests": [
-            {
-                "id": 101,
-                "date": "2026-05-10",
-                "result_link": "data/ekg_data/01_Ruhe.txt"
-            }
-        ],
-        "gender": "Female"
+    "id": 1,
+    "date_of_birth": 2001,
+    "firstname": "Anna",
+    "lastname": "Mayer",
+    "picture_path": "data/images/Person1_female.jpg",
+    "ekg_tests": [
+        {
+            "id": 101,
+            "date": "2026-05-10",
+            "result_link": "data/ekg_data/01_Ruhe.txt"
+        },
+        {
+            "id": 201,
+            "date": "2026-05-15",
+            "result_link": "data/ekg_data/04_Belastung.txt"
+        }
+    ],
+    "gender": "Female"
     },
 
 
