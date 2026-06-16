@@ -127,22 +127,50 @@ def run_analysis(option, selected_person, test_nr):
         st.error("Keine EKG-Daten vorhanden")
         st.stop()
     ekg_data = selected_person.ekg_tests[test_nr]
+    ekg = EKGdata(ekg_data)  # nur einmal erstellen
 
     if option == "Durchschnittspuls berechnen":
         try:
-            ekg = EKGdata(ekg_data)
             bpm = ekg.estimate_hr()
             st.write(f"Der durchschnittliche Puls beträgt: **{bpm:.2f} bpm**")
-
         except Exception as e:
             st.error(f"Fehler beim Schätzen der Herzfrequenz: {e}")
-    
 
     elif option == "EKG-Grafik anzeigen":
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("**📅 Testdatum**")
+            st.caption(ekg_data["date"])
+        with col2:
+            st.markdown("**⏱️ Dauer**")
+            total_min = ekg.get_duration_minutes()
+            minutes = int(total_min)
+            seconds = int((total_min - minutes) * 60)
+            st.caption(f"{minutes} min {seconds} sek")
         try:
-            ekg = EKGdata(ekg_data)
-            fig = ekg.plot_with_peaks()
+            total = ekg.get_duration_minutes()
+            window = 4 / 60 
+
+            start = st.slider(
+                "Zeitbereich",
+                min_value=0.0,
+                max_value=float(total - window),
+                value=0.0,
+                step=1/60,  
+                format="%.4f"
+            )
+
+            # Anzeige in Minuten und Sekunden
+            total_seconds = start * 60
+            minutes = int(total_seconds // 60)
+            seconds = int(total_seconds % 60)
+            st.caption(f"Position: {minutes} min {seconds} sek")
+
+            end = start + window
+
+            fig = ekg.plot_with_peaks_window(start_min=start, end_min=end)
             st.plotly_chart(fig, use_container_width=True)
+        
         except Exception as e:
             st.error(f"Plot Fehler: {e}")
 

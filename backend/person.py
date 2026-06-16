@@ -95,5 +95,4 @@ class Person:
         if not self.has_ekg_data():
             return None
         return EKGdata(self.ekg_tests[0])
-
     

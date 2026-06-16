@@ -121,5 +121,56 @@ class EKGdata:
             yaxis_title="Messwerte in mV",
             height=500,
         )
-
         return fig
+    
+    def plot_with_peaks_window(self, start_min=0, end_min=None):
+        if not hasattr(self, "peaks"):
+            self.find_peaks()
+
+        # Relativ zum ersten Zeitstempel
+        time_ms_relative = self.df["Zeit in ms"] - self.df["Zeit in ms"].iloc[0]
+        time_min = time_ms_relative / 1000 / 60
+
+        if end_min is None:
+            end_min = time_min.iloc[-1]
+
+        mask = (time_min >= start_min) & (time_min <= end_min)
+        plot_df = self.df[mask]
+        time_sec = time_ms_relative[mask] / 1000  # relative Sekunden
+
+        fig = px.line(
+            plot_df.assign(**{"Zeit in s": time_sec}),
+            x="Zeit in s",
+            y="Messwerte in mV",
+            title=f"EKG Signal {self.id} mit Peaks"
+        )
+
+        peak_indices = [i for i in self.peaks if i in plot_df.index]
+        if peak_indices:
+            fig.add_scatter(
+                x=time_sec.loc[peak_indices],
+                y=plot_df["Messwerte in mV"].loc[peak_indices],
+                mode="markers",
+                marker=dict(color="red", size=6),
+                name="Peaks"
+            )
+
+        start_sec = start_min * 60
+        tick_vals = [start_sec + i for i in range(5)]
+        tick_text = [f"{int(v//60)}m {int(v%60)}s" for v in tick_vals]
+
+        fig.update_layout(
+            xaxis=dict(
+                title="Zeit",
+                tickvals=tick_vals,
+                ticktext=tick_text,
+            ),
+            yaxis_title="Messwerte in mV",
+            height=500,
+        )
+        return fig
+    
+    def get_duration_minutes(self) -> float:
+        time_ms = self.df["Zeit in ms"]
+        duration_ms = time_ms.iloc[-1] - time_ms.iloc[0]
+        return round(duration_ms / 1000 / 60, 2)
