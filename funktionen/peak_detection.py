@@ -1,13 +1,10 @@
 def peak_detection(series, threshold, respacing_factor=5):
     """
-    A function to find the peaks in a series
-    Inputs:
-        - series (pd.Series): The series to find the peaks in
-        - threshold (float): The threshold for the peaks
-        - respacing_factor (int): The factor to respace the series
-    Outputs:
-        - peaks (list): A list of the indices of the peaks
+    Input: Messwertserie, Schwellenwert, Resampling‑Faktor.
+    Output: Liste der Peak‑Indizes.
     """
+
+
     # Respace the series
     series = series.iloc[::respacing_factor]
     
