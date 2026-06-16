@@ -115,25 +115,28 @@ def run_analysis(option, selected_person, test_nr):
         st.error("Keine EKG-Daten vorhanden")
         st.stop()
     ekg_data = selected_person.ekg_tests[test_nr]
+    ekg = EKGdata(ekg_data)  # nur einmal erstellen
 
     if option == "Durchschnittspuls berechnen":
         try:
-            ekg = EKGdata(ekg_data)
             bpm = ekg.estimate_hr()
             st.write(f"Der durchschnittliche Puls beträgt: **{bpm:.2f} bpm**")
-
         except Exception as e:
             st.error(f"Fehler beim Schätzen der Herzfrequenz: {e}")
-    
 
     elif option == "EKG-Grafik anzeigen":
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("**📅 Testdatum**")
+            st.caption(ekg_data["date"])
+        with col2:
+            st.markdown("**⏱️ Dauer**")
+            st.caption(f"{ekg.get_duration_minutes()} min")
         try:
-            ekg = EKGdata(ekg_data)
             fig = ekg.plot_with_peaks()
             st.plotly_chart(fig, use_container_width=True)
         except Exception as e:
             st.error(f"Plot Fehler: {e}")
-        
 
 
 #Router

@@ -85,5 +85,9 @@ class EKGdata:
             yaxis_title="Messwerte in mV",
             height=500,
         )
-
         return fig
+    
+    def get_duration_minutes(self) -> float:
+        time_ms = self.df["Zeit in ms"]
+        duration_ms = time_ms.iloc[-1] - time_ms.iloc[0]
+        return round(duration_ms / 1000 / 60, 2)
