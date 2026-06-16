@@ -14,21 +14,25 @@ persons = Person.load_persons() #Liste mit den 6 Person-Objekten
 
 #Navigation
 def go_to_person_select():
+    """Setzt die Seite auf 'select' und zeigt die Personenauswahl an."""
     print("BUTTON GEDRÜCKT")
     st.session_state.page = "select"
 
 
 def set_person(person):
+    """Setzt die ausgewählte Person in der Session und wechselt zur Analyse-Seite."""
     st.session_state.selected_person = person
     st.session_state.page = "analysis"
 
 
 def go_home():
+    """Setzt die Seite zurück auf 'home' und löscht die ausgewählte Person."""
     st.session_state.page = "home"
     st.session_state.selected_person = None
 
 #Startseite
 def home():
+    """Zeigt die Startseite mit einem Willkommensgruß und einem Button zum Starten der Analyse."""
     st.title("Willkommen in Ihrer digitalen EKG-Datenbank🫀")
 
     st.write("Starten Sie die Analyse der Patientendaten!")
@@ -42,6 +46,7 @@ def home():
 
 #Patient auswählen
 def select_person(persons):
+    """Zeigt die Seite zur Auswahl einer Testperson mit einem Dropdown-Menü und einem Button zum Fortfahren."""
     st.header("Patient:in auswählen")
 
     person_names = [p.get_full_name() for p in persons]
@@ -60,6 +65,7 @@ def select_person(persons):
 
 #Patient ansehen
 def show_person(selected_person):
+    """Zeigt die Seite mit den Details der ausgewählten Person, einschließlich Bild, Name, Geburtsjahr, Geschlecht und geschätzter maximaler Herzfrequenz."""
     st.header("Patient:in anzeigen")
 
     col1, col2 = st.columns([1, 2])
@@ -80,6 +86,7 @@ def show_person(selected_person):
 
 #EKG checken
 def check_ekg_data(selected_person):
+    """Zeigt die Seite zur Überprüfung der EKG-Daten der ausgewählten Person an und gibt eine Fehlermeldung aus, wenn keine Daten vorhanden sind."""
     st.header("EKG Daten überprüfen")
 
     if not selected_person.has_ekg_data():
@@ -90,6 +97,7 @@ def check_ekg_data(selected_person):
 
 # EKG Analyse
 def select_analysis(): 
+    """Zeigt die Seite zur Auswahl der EKG-Analyse an und gibt die verfügbaren Optionen als Radio-Buttons aus."""
     st.header("Analyse auswählen")
     return st.radio(
         "Bitte Analyse auswählen:",
@@ -99,6 +107,7 @@ def select_analysis():
 
 
 def run_analysis(option, selected_person):
+    """Führt die ausgewählte Analyse auf den EKG-Daten der ausgewählten Person durch und zeigt die Ergebnisse an."""
     if not selected_person.ekg_tests:
         st.error("Keine EKG-Daten vorhanden")
         st.stop()
@@ -127,6 +136,7 @@ def run_analysis(option, selected_person):
 
 #Router
 def main():
+    """Steuert die Navigation zwischen den verschiedenen Seiten der Anwendung basierend auf dem aktuellen Status in der Session."""
     if st.session_state.page == "home":
         home()
 
