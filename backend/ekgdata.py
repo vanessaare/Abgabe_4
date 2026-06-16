@@ -10,7 +10,7 @@ class EKGdata:
         self.date = ekg_dict["date"]
         self.data = ekg_dict["result_link"]
         self.df = pd.read_csv(self.data, sep='\t', header=None, names=['Messwerte in mV','Zeit in ms',])
-        self.df = self.df.iloc[:5000]  
+        #self.df = self.df.iloc[:5000]  
 
     @staticmethod
     def load_by_id(test_id: int, person_database: list):
