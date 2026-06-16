@@ -2,6 +2,7 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 from funktionen.peak_detection import peak_detection
+import plotly.graph_objects as go
 
 
 class EKGdata:
@@ -127,7 +128,6 @@ class EKGdata:
         if not hasattr(self, "peaks"):
             self.find_peaks()
 
-        # Relativ zum ersten Zeitstempel
         time_ms_relative = self.df["Zeit in ms"] - self.df["Zeit in ms"].iloc[0]
         time_min = time_ms_relative / 1000 / 60
 
@@ -136,30 +136,33 @@ class EKGdata:
 
         mask = (time_min >= start_min) & (time_min <= end_min)
         plot_df = self.df[mask]
-        time_sec = time_ms_relative[mask] / 1000  # relative Sekunden
+        time_sec = time_ms_relative[mask] / 1000
 
-        fig = px.line(
-            plot_df.assign(**{"Zeit in s": time_sec}),
-            x="Zeit in s",
-            y="Messwerte in mV",
-            title=f"EKG Signal {self.id} mit Peaks"
-        )
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            x=time_sec,
+            y=plot_df["Messwerte in mV"],
+            mode='lines',
+            name='EKG',
+            line=dict(color='steelblue')
+        ))
 
         peak_indices = [i for i in self.peaks if i in plot_df.index]
         if peak_indices:
-            fig.add_scatter(
+            fig.add_trace(go.Scatter(
                 x=time_sec.loc[peak_indices],
                 y=plot_df["Messwerte in mV"].loc[peak_indices],
                 mode="markers",
                 marker=dict(color="red", size=6),
                 name="Peaks"
-            )
+            ))
 
         start_sec = start_min * 60
         tick_vals = [start_sec + i for i in range(5)]
         tick_text = [f"{int(v//60)}m {int(v%60)}s" for v in tick_vals]
 
         fig.update_layout(
+            title=f"EKG Signal {self.id} mit Peaks",
             xaxis=dict(
                 title="Zeit",
                 tickvals=tick_vals,
