@@ -104,10 +104,15 @@ def check_ekg_data(selected_person):
         st.stop()
     st.success("EKG-Daten vorhanden!")
 
+# Testnummer auswählen
+def select_test_nr(selected_person):
+    st.header("EKG Test auswählen")
+    test_numbers = [f"Test {i+1}" for i in range(len(selected_person.ekg_tests))]
+    selected_test = st.selectbox("Bitte Test auswählen:", test_numbers)
+    return test_numbers.index(selected_test)
 
 # EKG Analyse
 def select_analysis(): 
-    st.header("Analyse auswählen")
     return st.radio(
         "Bitte Analyse auswählen:",
         ["Durchschnittspuls berechnen", "EKG-Grafik anzeigen"]
@@ -115,7 +120,7 @@ def select_analysis():
 
 
 
-def run_analysis(option, selected_person):
+def run_analysis(option, selected_person, test_nr):
     if not selected_person.ekg_tests:
         st.error("Keine EKG-Daten vorhanden")
         st.stop()
