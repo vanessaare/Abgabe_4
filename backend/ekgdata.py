@@ -54,6 +54,8 @@ class EKGdata:
         return self.fig
 
     def find_peaks(self, threshold=0.5, respacing_factor=5):
+        """ Input: Schwellenwert und Resampling‑Faktor.
+        Output: Liste der Peak‑Indizes."""
         self.peaks = peak_detection(
             self.df["Messwerte in mV"],
             threshold,
