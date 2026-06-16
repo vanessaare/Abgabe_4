@@ -141,10 +141,34 @@ def run_analysis(option, selected_person, test_nr):
             st.caption(ekg_data["date"])
         with col2:
             st.markdown("**⏱️ Dauer**")
-            st.caption(f"{ekg.get_duration_minutes()} min")
+            total_min = ekg.get_duration_minutes()
+            minutes = int(total_min)
+            seconds = int((total_min - minutes) * 60)
+            st.caption(f"{minutes} min {seconds} sek")
         try:
-            fig = ekg.plot_with_peaks()
+            total = ekg.get_duration_minutes()
+            window = 4 / 60 
+
+            start = st.slider(
+                "Zeitbereich",
+                min_value=0.0,
+                max_value=float(total - window),
+                value=0.0,
+                step=1/60,  
+                format="%.4f"
+            )
+
+            # Anzeige in Minuten und Sekunden
+            total_seconds = start * 60
+            minutes = int(total_seconds // 60)
+            seconds = int(total_seconds % 60)
+            st.caption(f"Position: {minutes} min {seconds} sek")
+
+            end = start + window
+
+            fig = ekg.plot_with_peaks_window(start_min=start, end_min=end)
             st.plotly_chart(fig, use_container_width=True)
+        
         except Exception as e:
             st.error(f"Plot Fehler: {e}")
 
