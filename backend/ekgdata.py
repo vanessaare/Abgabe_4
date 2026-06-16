@@ -3,6 +3,7 @@ import plotly.express as px
 import numpy as np
 from funktionen.peak_detection import peak_detection
 
+
 class EKGdata:
     """
     Klasse zur Verwaltung, Analyse und Visualisierung von EKG‑Messdaten.
@@ -62,6 +63,14 @@ class EKGdata:
             respacing_factor
         )
         return self.peaks
+    def calculate_hrv_rmssd(self):
+        peaks = self.find_peaks()
+        if len(peaks) < 3:
+            return None
+
+        rr = np.diff(peaks)
+        rmssd = np.sqrt(np.mean(np.square(np.diff(rr))))
+        return rmssd
     
     def estimate_hr(self):
         """Input: keine (beinhaltet erkannte Peaks).

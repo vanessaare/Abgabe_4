@@ -1,6 +1,8 @@
+
 import streamlit as st
 from backend.person import Person 
 from backend.ekgdata import EKGdata
+from funktionen.hrv import calculate_hrv_rmssd
 
 
 if "page" not in st.session_state:
@@ -115,7 +117,7 @@ def select_test_nr(selected_person):
 def select_analysis(): 
     return st.radio(
         "Bitte Analyse auswählen:",
-        ["Durchschnittspuls berechnen", "EKG-Grafik anzeigen"]
+        ["Durchschnittspuls berechnen", "EKG-Grafik anzeigen", "HRV berechnen"]
     )
 
 
@@ -143,7 +145,23 @@ def run_analysis(option, selected_person, test_nr):
             st.plotly_chart(fig, use_container_width=True)
         except Exception as e:
             st.error(f"Plot Fehler: {e}")
+
+    elif option == "HRV berechnen":
+        try:
+         ekg = EKGdata(ekg_data)
+         rmssd = calculate_hrv_rmssd(ekg)
         
+         if rmssd is not None:
+            st.write(f"Die Herzratenvariabilität (HRV) beträgt {rmssd:.2f} ms")
+         else:
+            st.warning("Nicht genügend Peaks für die HRV-Berechnung")
+            
+        # Diagnose-Kurzcheck für dich (kannst du später löschen)
+         st.divider()
+         st.caption(f"**Diagnose:** {len(ekg.peaks)} Peaks gefunden | Erste 5 Werte: {list(ekg.peaks[:5])} | fs: {getattr(ekg, 'fs', getattr(ekg, 'sampling_rate', 'Nicht gefunden'))}")
+            
+        except Exception as e:
+         st.error(f"Fehler bei der HRV-Berechnung: {e}")
 
 
 #Router
