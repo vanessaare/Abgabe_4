@@ -21,7 +21,7 @@ class EKGdata:
         self.date = ekg_dict["date"]
         self.data = ekg_dict["result_link"]
         self.df = pd.read_csv(self.data, sep='\t', header=None, names=['Messwerte in mV','Zeit in ms',])
-        self.df = self.df.iloc[:5000]  
+        #self.df = self.df.iloc[:5000]  
 
     @staticmethod
     def load_by_id(test_id: int, person_database: list):
@@ -54,10 +54,6 @@ class EKGdata:
         return self.fig
 
     def find_peaks(self, threshold=0.5, respacing_factor=5):
-        """Input: Schwellenwert und Resampling‑Faktor.
-        Output: Liste der Peak‑Indizes.
-        """
-    
         self.peaks = peak_detection(
             self.df["Messwerte in mV"],
             threshold,

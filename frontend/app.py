@@ -60,6 +60,8 @@ def select_person(persons):
 
     if st.button("Weiter"):
         set_person(person)
+        st.rerun()
+
 
 
 
@@ -68,7 +70,7 @@ def show_person(selected_person):
     """Zeigt die Seite mit den Details der ausgewählten Person, einschließlich Bild, Name, Geburtsjahr, Geschlecht und geschätzter maximaler Herzfrequenz."""
     st.header("Patient:in anzeigen")
 
-    col1, col2 = st.columns([1, 2])
+    col1, col2, col3 = st.columns([1, 2, 1])
     with col1:
         if selected_person.picture_path:
             st.image(selected_person.get_image(), width=200)
@@ -80,13 +82,21 @@ def show_person(selected_person):
         st.write(f"**Geschlecht:** {selected_person.gender}")
         st.write(f"**HR_max:** {selected_person.calc_max_heart_rate()} bpm")
 
+    with col3:
+        anzahl_tests = len(selected_person.ekg_tests)
+
+        if anzahl_tests > 0:
+            st.success(f"✅ {anzahl_tests} EKG-Test(s)")
+        else:
+            st.error("❌ Keine EKG-Daten vorhanden")
+            st.stop()
+
     st.button("⬅ Zurück", on_click=go_home)
 
 
 
 #EKG checken
 def check_ekg_data(selected_person):
-    """Zeigt die Seite zur Überprüfung der EKG-Daten der ausgewählten Person an und gibt eine Fehlermeldung aus, wenn keine Daten vorhanden sind."""
     st.header("EKG Daten überprüfen")
 
     if not selected_person.has_ekg_data():
@@ -97,7 +107,6 @@ def check_ekg_data(selected_person):
 
 # EKG Analyse
 def select_analysis(): 
-    """Zeigt die Seite zur Auswahl der EKG-Analyse an und gibt die verfügbaren Optionen als Radio-Buttons aus."""
     st.header("Analyse auswählen")
     return st.radio(
         "Bitte Analyse auswählen:",
@@ -107,12 +116,10 @@ def select_analysis():
 
 
 def run_analysis(option, selected_person):
-    """Führt die ausgewählte Analyse auf den EKG-Daten der ausgewählten Person durch und zeigt die Ergebnisse an."""
     if not selected_person.ekg_tests:
         st.error("Keine EKG-Daten vorhanden")
         st.stop()
-    
-    ekg_data = selected_person.ekg_tests[0]
+    ekg_data = selected_person.ekg_tests[test_nr]
 
     if option == "Durchschnittspuls berechnen":
         try:
@@ -154,10 +161,14 @@ def main():
             st.stop()
 
         show_person(person)
-        check_ekg_data(person)
+    
 
+        test_nr = select_test_nr(person)  
+
+        st.subheader("Analyse durchführen")
         option = select_analysis()
-        run_analysis(option, person)
+
+        run_analysis(option, person, test_nr)
 
 if __name__ == "__main__":
     main()
