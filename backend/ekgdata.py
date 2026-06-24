@@ -55,7 +55,7 @@ class EKGdata:
             )
         return self.fig
 
-    def find_peaks(self, threshold=0.5, respacing_factor=5):
+    def find_peaks(self, threshold=350, respacing_factor=5):
         """ Input: Schwellenwert und Resampling‑Faktor.
         Output: Liste der Peak‑Indizes."""
         self.peaks = peak_detection(
@@ -95,32 +95,30 @@ class EKGdata:
             self.find_peaks()
 
         plot_df = self.df.head(2000)
-        fig = px.line(
-            plot_df,
-            x="Zeit in ms",
-            y="Messwerte in mV",
-            title=f"EKG Signal {self.id} mit Peaks"
-        )
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            x=plot_df["Zeit in ms"],
+            y=plot_df["Messwerte in mV"],
+            mode='lines', name='EKG'
+        ))
 
-        peak_indices = [i for i in self.peaks if i < len(plot_df)]
+        peak_indices = [i for i in self.peaks if i in plot_df.index]
         if peak_indices:
-            fig.add_scatter(
-                x=plot_df["Zeit in ms"].iloc[peak_indices],
-                y=plot_df["Messwerte in mV"].iloc[peak_indices],
-                mode="markers",
-                marker=dict(color="red", size=6),
+            fig.add_trace(go.Scatter(
+                x=plot_df["Zeit in ms"].loc[peak_indices],
+                y=plot_df["Messwerte in mV"].loc[peak_indices],
+                mode="markers", marker=dict(color = "red", size=6), 
                 name="Peaks"
-            )
+            ))
 
         if not plot_df.empty:
-            fig.update_xaxes(
-                range=[plot_df["Zeit in ms"].iloc[0], plot_df["Zeit in ms"].iloc[-1]]
-            )
+            fig.update_xaxes(range=[plot_df["Zeit in ms"].iloc[0], plot_df["Zeit in ms"].iloc[-1]])
 
         fig.update_layout(
+            title=f"EKG Signal {self.id} mit Peaks",
             xaxis_title="Zeit in ms",
             yaxis_title="Messwerte in mV",
-            height=500,
+            height=500
         )
         return fig
     

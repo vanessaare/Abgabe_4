@@ -1,16 +1,13 @@
-def peak_detection(series, threshold, respacing_factor=5):
+def peak_detection(series, threshold, respacing_factor):
     """
     Input: Messwertserie, Schwellenwert, Resampling‑Faktor.
     Output: Liste der Peak‑Indizes.
     """
-
-
     # Respace the series
     series = series.iloc[::respacing_factor]
     
     # Filter the series
     series = series[series>threshold]
-
 
     peaks = []
     last = 0

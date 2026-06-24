@@ -12,7 +12,6 @@ class Person:
     """
 
 
-
     def __init__(self, id : int, date_of_birth : int, firstname : str, lastname : str, picture_path : str, ekg_tests : list, gender = "Male"):
         """Initialisiert das Person‑Objekt mit den angegebenen Attributen und EKG‑Tests."""
     
@@ -45,9 +44,6 @@ class Person:
             persons.append(person)
 
         return persons
-
-
-
 
     def get_age(self):
         """Output: Alter der Person."""    
