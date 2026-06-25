@@ -142,6 +142,50 @@
             "picture_path": "data/images/Person14_female.webp",
             "ekg_tests": [],
             "gender": "Female"
+        },
+        "11": {
+            "id": 15,
+            "date_of_birth": 1995,
+            "firstname": "Michaela",
+            "lastname": "Shiffrin",
+            "picture_path": "data/images/Person15_female.webp",
+            "ekg_tests": [
+                {
+                    "id": 203,
+                    "date": "2026-07-10",
+                    "result_link": "data/ekg_data/15_203.fit"
+                },
+                {
+                    "id": 204,
+                    "date": "2026-07-10",
+                    "result_link": "data/ekg_data/15_204.txt"
+                }
+            ],
+            "gender": "Female"
+        },
+        "12": {
+            "id": 16,
+            "date_of_birth": 1987,
+            "firstname": "Roy",
+            "lastname": "Bianco",
+            "picture_path": "data/images/Person16_male.webp",
+            "ekg_tests": [
+                {
+                    "id": 205,
+                    "date": "2026-05-13",
+                    "result_link": "data/ekg_data/16_205.txt"
+                }
+            ],
+            "gender": "Male"
+        },
+        "13": {
+            "id": 17,
+            "date_of_birth": 1990,
+            "firstname": "bla",
+            "lastname": "blub",
+            "picture_path": "data/images/default.webp",
+            "ekg_tests": [],
+            "gender": "Male"
         }
     }
 }

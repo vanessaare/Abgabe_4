@@ -15,5 +15,20 @@
     "password": "viosorr14",
     "role": "patient",
     "person_id": 14
+  },
+  "patient_michaela_shiffrin": {
+    "password": "micshif15",
+    "role": "patient",
+    "person_id": 15
+  },
+  "patient_roy_bianco": {
+    "password": "roybian16",
+    "role": "patient",
+    "person_id": 16
+  },
+  "patient_bla_blub": {
+    "password": "blablub17",
+    "role": "patient",
+    "person_id": 17
   }
 }
