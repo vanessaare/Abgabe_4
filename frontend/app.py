@@ -1,6 +1,7 @@
 import streamlit as st
 from backend.person import Person 
 from backend.ekgdata import EKGdata
+from frontend.login import login, logout, USERS
 
 
 if "page" not in st.session_state:
@@ -152,6 +153,16 @@ def run_analysis(option, selected_person, test_nr):
 #Router
 def main():
     """Steuert die Navigation zwischen den verschiedenen Seiten der Anwendung basierend auf dem aktuellen Status in der Session."""
+
+    if not login():
+        st.stop()
+    logout()
+
+    st.sidebar.write(
+        f"Angemeldet als: {st.session_state.username}"
+
+    )
+    
     if st.session_state.page == "home":
         home()
 
