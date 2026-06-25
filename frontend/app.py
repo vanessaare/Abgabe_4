@@ -5,6 +5,7 @@ from backend.person import Person
 from backend.loader import load_test
 from funktionen.hrv import calculate_hrv_rmssd
 from frontend.login import login, logout, create_patient_account
+from funktionen.filter_persons import filter_persons
 
 persons = Person.load_persons()
 
@@ -76,30 +77,51 @@ def home():
 
 def select_person():
 
-    st.header("Patient:in auswählen")
+    st.subheader("🔍 Filter")
 
-    if not persons:
-        st.info("Noch keine Personen vorhanden.")
-        return
-
-    names = [p.get_full_name() for p in persons]
-    selected_name = st.selectbox("Bitte Patient:in auswählen:", names)
-
-    selected_person = next(p for p in persons if p.get_full_name() == selected_name)
+    name_filter = st.text_input("Name suchen")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button("Weiter"):
-            set_person(selected_person)
-            st.rerun()
+        gender_filter = st.selectbox("Geschlecht", ["Alle", "Male", "Female"])
 
     with col2:
-        if st.session_state.role != "patient":
-            if st.button("🗑️"):
-                persons.remove(selected_person)
-                st.success(f"✅ {selected_person.get_full_name()} wurde gelöscht.")
+        age_min = st.number_input("Min Alter", 0, 120, 0)
+        age_max = st.number_input("Max Alter", 0, 120, 120)
+        
+
+    filtered = filter_persons(
+        persons,
+        name_filter,
+        gender_filter,
+        age_min,
+        age_max
+    )
+
+    if not filtered:
+        st.warning("Keine passenden Patienten gefunden.")
+    else:
+        st.header("Patient:in auswählen")
+
+        names = [p.get_full_name() for p in filtered]
+        selected_name = st.selectbox("Bitte Patient:in auswählen:", names)
+
+        selected_person = next(p for p in filtered if p.get_full_name() == selected_name)
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            if st.button("Weiter"):
+                set_person(selected_person)
                 st.rerun()
+
+        with col2:
+            if st.session_state.role != "patient":
+                if st.button("🗑️"):
+                    persons.remove(selected_person)
+                    st.success(f"✅ {selected_person.get_full_name()} wurde gelöscht.")
+                    st.rerun()
 
     if st.session_state.get("role") != "patient":
         with st.expander("➕ Neue Person hinzufügen"):
