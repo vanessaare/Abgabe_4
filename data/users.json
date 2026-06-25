@@ -10,5 +10,10 @@
   "patient1": {
     "password": "patient123",
     "role": "patient"
+  },
+  "patient_violet_sorrengail": {
+    "password": "viosorr14",
+    "role": "patient",
+    "person_id": 14
   }
 }

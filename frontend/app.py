@@ -4,7 +4,7 @@ import streamlit as st
 from backend.person import Person
 from backend.loader import load_test
 from funktionen.hrv import calculate_hrv_rmssd
-from frontend.login import login, logout
+from frontend.login import login, logout, create_patient_account
 
 persons = Person.load_persons()
 
@@ -17,6 +17,16 @@ def go_home():
 def set_person(person):
     st.session_state.selected_person = person
     st.session_state.page = "analysis"
+
+
+def delete_person(person):
+    global persons
+    persons = [p for p in persons if p.id != person.id]
+    Person.save_persons(persons)
+    st.session_state.page = "home"
+    st.session_state.selected_person = None
+    st.success(f"✅ Person {person.get_full_name()} wurde gelöscht.")
+    st.rerun()
 
 
 # --- Neue Person hinzufügen ---
@@ -51,7 +61,8 @@ def add_person_form():
         new_person = Person(new_id, int(dob), firstname, lastname, pic_path, [], gender)
         persons.append(new_person)
         Person.save_persons(persons)
-        st.success(f"✅ {new_person.get_full_name()} wurde gespeichert.")
+        username, password = create_patient_account(new_person)
+        st.success(f"✅ {new_person.get_full_name()} wurde gespeichert.\nLogin: {username}\nPasswort: {password}")
         st.rerun()
 
 
@@ -131,23 +142,42 @@ def home():
     if st.button("Analyse starten"):
         st.session_state.page = "select"
         st.rerun()
-    st.divider()
-    if st.session_state.get("role") != "patient":
-        with st.expander("➕ Neue Person hinzufügen"):
-            add_person_form()
-    else:
-        st.info("Herzlich Willkommen! Hier können Sie Ihre EKG-Daten einsehen. Bitte wenden Sie sich an das medizinische Personal, um neue Tests hinzuzufügen oder Ihre Daten zu bearbeiten.")
+    if st.session_state.role == "patient":
+        st.info("Herzlich Willkommen! " \
+        "Hier können Sie Ihre EKG-Daten einsehen. " \
+        "Bitte wenden Sie sich an das medizinische Personal, um neue Tests hinzuzufügen oder Ihre Daten zu bearbeiten.")
 
 
 def select_person():
     st.header("Patient:in auswählen")
-    names    = [p.get_full_name() for p in persons]
-    selected = st.selectbox("Bitte Patient:in auswählen:", names)
-    person   = next(p for p in persons if p.get_full_name() == selected)
-    if st.button("Weiter"):
-        set_person(person)
-        st.rerun()
 
+    if not persons:
+        st.info("Noch keine Personen vorhanden.")
+        return
+
+    names = [p.get_full_name() for p in persons]
+
+    selected_name = st.selectbox("Bitte Patient:in auswählen:", names)
+
+    selected_person = next(p for p in persons if p.get_full_name() == selected_name)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("Weiter"):
+            set_person(selected_person)
+            st.rerun()
+
+    with col2:
+        if st.session_state.role != "patient":
+            if st.button("🗑️"):
+                persons.remove(selected_person)
+                st.success(f"✅ {selected_person.get_full_name()} wurde gelöscht.")
+                st.rerun()
+
+    if st.session_state.get("role") != "patient":
+        with st.expander("➕ Neue Person hinzufügen"):
+            add_person_form()
 
 def show_person(person):
     st.header("Patient:in anzeigen")
@@ -169,6 +199,7 @@ def show_person(person):
 
     # Buttons: Zurück | Editieren | Test hinzufügen
     st.button("⬅ Zurück", on_click=go_home)
+
 
     if st.session_state.get("role") != "patient":
         with st.expander("✏️ Person editieren"):
@@ -236,19 +267,27 @@ def main():
     if not login():
         st.stop()
     logout()
-    
+
+    if "page" not in st.session_state:
+        st.session_state.page = "home"
+    if "selected_person" not in st.session_state:
+        st.session_state.selected_person = None
+    if "edit_mode" not in st.session_state:
+        st.session_state.edit_mode = False
+    if "add_test_mode" not in st.session_state:
+        st.session_state.add_test_mode = False
+
+    if st.session_state.get("role") == "patient":
+        person_id = st.session_state.get("person_id")
+        if person_id is not None:
+            matching_person = next((p for p in persons if p.id == person_id), None)
+            if matching_person is not None:
+                st.session_state.selected_person = matching_person
+                if st.session_state.page == "home":
+                    st.session_state.page = "analysis"
+
     st.sidebar.write(
         f"Angemeldet als: {st.session_state.username}")
-    
-
-    if "page"          not in st.session_state: 
-        st.session_state.page           = "home"
-    if "selected_person" not in st.session_state: 
-        st.session_state.selected_person = None
-    if "edit_mode"     not in st.session_state: 
-        st.session_state.edit_mode      = False
-    if "add_test_mode" not in st.session_state: 
-        st.session_state.add_test_mode  = False
 
     page = st.session_state.page
 
