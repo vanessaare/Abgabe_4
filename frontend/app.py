@@ -7,7 +7,6 @@ from funktionen.hrv import calculate_hrv_rmssd
 
 persons = Person.load_persons()
 
-
 # --- Navigation ---
 
 def go_home():
