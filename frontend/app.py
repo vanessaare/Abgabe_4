@@ -214,12 +214,10 @@ def select_test_nr(person):
         st.info("Keine Tests vorhanden.")
         return None
 
-    # Auswahl
     selected = st.selectbox("Bitte Test auswählen:", labels)
     idx = labels.index(selected)
 
-    # Lösch-Icon erscheint NUR wenn ein Test ausgewählt wurde
-    if selected:
+    if st.session_state.get("role") != "patient":
         if st.button("🗑️ Löschen"):
             del person.ekg_tests[idx]
             st.success(f"{selected} wurde gelöscht.")
