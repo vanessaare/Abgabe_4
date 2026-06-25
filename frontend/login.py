@@ -1,34 +1,50 @@
 import streamlit as st
-import streamlit_authenticator as stauth
-import yaml 
-
-def load_authenticator():
-
-    with open("data/config.yaml", "r") as file:
-        config = yaml.safe_load(file)
-
-    authenticator = stauth.Authenticate(
-        config["credentials"],
-        config["cookie"]["name"],
-        config["cookie"]["key"],
-        config["cookie"]["expiry_days"]
-    )
-
-    return authenticator
+import json
 
 
-def login(authenticator):
+with open("data/users.json", "r") as file:
+    USERS = json.load(file)
 
-    authenticator.login()
 
-    if st.session_state["authentication_status"]:
-        st.success("Login erfolgreich")
-        return True
+def login():
 
-    elif st.session_state["authentication_status"] is False:
-        st.error("Falscher Benutzer oder Passwort")
+    if "logged_in" not in st.session_state:
+        st.session_state.logged_in = False
 
-    else:
-        st.warning("Bitte einloggen")
+    if not st.session_state.logged_in:
 
-    return False
+        st.title("Login")
+
+        username = st.text_input("Benutzername")
+        password = st.text_input("Passwort", type="password")
+
+        if st.button("Anmelden"):
+
+            if (
+                username in USERS
+                and USERS[username]["password"] == password
+            ):
+
+                st.session_state.logged_in = True
+                st.session_state.username = username
+                st.session_state.role = USERS[username]["role"]
+
+                st.rerun()
+
+            else:
+                st.error("Falscher Benutzername oder Passwort")
+
+        return False
+
+    return True
+
+
+def logout():
+
+    if st.sidebar.button("Logout"):
+
+        st.session_state.logged_in = False
+        st.session_state.username = None
+        st.session_state.role = None
+
+        st.rerun()

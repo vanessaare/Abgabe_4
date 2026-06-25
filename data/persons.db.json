@@ -3,7 +3,7 @@
         "1": {
             "id": 1,
             "date_of_birth": 2001,
-            "firstname": "Anna",
+            "firstname": "Anne",
             "lastname": "Mayer",
             "picture_path": "data/images/Person1_female.jpg",
             "ekg_tests": [
@@ -23,7 +23,7 @@
         "2": {
             "id": 2,
             "date_of_birth": 1998,
-            "firstname": "Lukas",
+            "firstname": "Luka",
             "lastname": "Huber",
             "picture_path": "data/images/Person1_male.webp",
             "ekg_tests": [
@@ -136,6 +136,24 @@
             "picture_path": "data/images/Person10_female.JPG",
             "ekg_tests": [],
             "gender": "Female"
+        },
+        "11": {
+            "id": 11,
+            "date_of_birth": 1990,
+            "firstname": "hiuh",
+            "lastname": "küp8h",
+            "picture_path": "data/images/default.webp",
+            "ekg_tests": [],
+            "gender": "Male"
+        },
+        "12": {
+            "id": 12,
+            "date_of_birth": 1990,
+            "firstname": "Maja",
+            "lastname": "Hase",
+            "picture_path": "data/images/default.webp",
+            "ekg_tests": [],
+            "gender": "Male"
         }
     }
 }

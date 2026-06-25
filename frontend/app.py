@@ -4,6 +4,7 @@ import streamlit as st
 from backend.person import Person
 from backend.loader import load_test
 from funktionen.hrv import calculate_hrv_rmssd
+from frontend.login import login, logout
 
 persons = Person.load_persons()
 
@@ -131,8 +132,11 @@ def home():
         st.session_state.page = "select"
         st.rerun()
     st.divider()
-    with st.expander("➕ Neue Person hinzufügen"):
-        add_person_form()
+    if st.session_state.get("role") != "patient":
+        with st.expander("➕ Neue Person hinzufügen"):
+            add_person_form()
+    else:
+        st.info("Herzlich Willkommen! Hier können Sie Ihre EKG-Daten einsehen. Bitte wenden Sie sich an das medizinische Personal, um neue Tests hinzuzufügen oder Ihre Daten zu bearbeiten.")
 
 
 def select_person():
@@ -166,13 +170,16 @@ def show_person(person):
     # Buttons: Zurück | Editieren | Test hinzufügen
     st.button("⬅ Zurück", on_click=go_home)
 
-    with st.expander("✏️ Person editieren"):
-        edit_person_form(person)
+    if st.session_state.get("role") != "patient":
+        with st.expander("✏️ Person editieren"):
+            edit_person_form(person)
 
-    with st.expander("➕ Test hinzufügen"):
-        add_test_form(person)
-        if not person.has_ekg_data():
-            st.stop()
+        with st.expander("➕ Test hinzufügen"):
+            add_test_form(person)
+            if not person.has_ekg_data():
+                st.stop()
+    else:
+        st.info("Sie haben keine Berechtigung, Daten zu bearbeiten oder neue Tests hinzuzufügen.")
 
 
 def select_test_nr(person):
@@ -224,6 +231,16 @@ def run_analysis(person, test_nr):
 # --- Router ---
 
 def main():
+    """Steuert die Navigation zwischen den verschiedenen Seiten der Anwendung basierend auf dem aktuellen Status in der Session."""
+
+    if not login():
+        st.stop()
+    logout()
+    
+    st.sidebar.write(
+        f"Angemeldet als: {st.session_state.username}")
+    
+
     if "page"          not in st.session_state: 
         st.session_state.page           = "home"
     if "selected_person" not in st.session_state: 
@@ -237,15 +254,22 @@ def main():
 
     if page == "home":
         home()
+
     elif page == "select":
         select_person()
+
     elif page == "analysis":
+
         person = st.session_state.selected_person
+
         if person is None:
             st.session_state.page = "select"
             st.rerun()
+
         show_person(person)
+
         if person.has_ekg_data() and not st.session_state.get("edit_mode") and not st.session_state.get("add_test_mode"):
+
             st.subheader("Analyse durchführen")
             test_nr = select_test_nr(person)
             run_analysis(person, test_nr)
