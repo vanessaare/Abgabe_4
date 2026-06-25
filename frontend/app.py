@@ -1,226 +1,252 @@
-
+import os
+import datetime
 import streamlit as st
-from backend.person import Person 
-#from backend.ekgdata import EKGdata
-from funktionen.hrv import calculate_hrv_rmssd
+from backend.person import Person
 from backend.loader import load_test
+from funktionen.hrv import calculate_hrv_rmssd
+
+persons = Person.load_persons()
 
 
-if "page" not in st.session_state:
+# --- Navigation ---
+
+def go_home():
     st.session_state.page = "home"
-
-if "selected_person" not in st.session_state:
     st.session_state.selected_person = None
 
-
-persons = Person.load_persons() #Liste mit den 6 Person-Objekten
-
-#Navigation
-def go_to_person_select():
-    """Setzt die Seite auf 'select' und zeigt die Personenauswahl an."""
-    print("BUTTON GEDRÜCKT")
-    st.session_state.page = "select"
-
-
 def set_person(person):
-    """Setzt die ausgewählte Person in der Session und wechselt zur Analyse-Seite."""
     st.session_state.selected_person = person
     st.session_state.page = "analysis"
 
 
-def go_home():
-    """Setzt die Seite zurück auf 'home' und löscht die ausgewählte Person."""
-    st.session_state.page = "home"
-    st.session_state.selected_person = None
+# --- Neue Person hinzufügen ---
 
-#Startseite
-def home():
-    """Zeigt die Startseite mit einem Willkommensgruß und einem Button zum Starten der Analyse."""
-    st.title("Willkommen in Ihrer digitalen EKG-Datenbank🫀")
+def add_person_form():
+    st.subheader("➕ Neue Person hinzufügen")
+    with st.form("add_person"):
+        col1, col2 = st.columns(2)
+        firstname   = col1.text_input("Vorname")
+        lastname    = col2.text_input("Nachname")
+        dob         = col1.number_input("Geburtsjahr", min_value=1900, max_value=datetime.date.today().year, value=1990)
+        gender      = col2.selectbox("Geschlecht", ["Male", "Female"])
+        picture     = st.file_uploader("Bild (optional)", type=["jpg", "jpeg", "png", "webp"])
+        submitted   = st.form_submit_button("Person speichern")
 
-    st.write("Starten Sie die Analyse der Patientendaten!")
+    if submitted:
+        if not firstname or not lastname:
+            st.error("Vor- und Nachname sind Pflichtfelder.")
+            return
 
-    if st.button("Analyse starten"):
-        st.write("Analyse wird vorbereitet...")
-        st.session_state.page = "select"
+        new_id = Person.next_person_id(persons)
+
+        # Bild speichern
+        pic_path = "data/images/default.webp"
+        if picture:
+            ext      = picture.name.split(".")[-1]
+            pic_path = f"data/images/Person{new_id}_{gender.lower()}.{ext}"
+            os.makedirs("data/images", exist_ok=True)
+            with open(pic_path, "wb") as f:
+                f.write(picture.read())
+
+        new_person = Person(new_id, int(dob), firstname, lastname, pic_path, [], gender)
+        persons.append(new_person)
+        Person.save_persons(persons)
+        st.success(f"✅ {new_person.get_full_name()} wurde gespeichert.")
         st.rerun()
 
 
+# --- Person editieren ---
 
-#Patient auswählen
-def select_person(persons):
-    """Zeigt die Seite zur Auswahl einer Testperson mit einem Dropdown-Menü und einem Button zum Fortfahren."""
+def edit_person_form(person):
+    st.subheader("✏️ Person editieren")
+    with st.form("edit_person"):
+        col1, col2 = st.columns(2)
+        firstname = col1.text_input("Vorname",   value=person.firstname)
+        lastname  = col2.text_input("Nachname",  value=person.lastname)
+        dob       = col1.number_input("Geburtsjahr", min_value=1900,
+                                      max_value=datetime.date.today().year,
+                                      value=person.date_of_birth)
+        gender    = col2.selectbox("Geschlecht", ["Male", "Female"],
+                                   index=0 if person.gender == "Male" else 1)
+        picture   = st.file_uploader("Neues Bild (optional)", type=["jpg", "jpeg", "png", "webp"])
+        submitted = st.form_submit_button("Änderungen speichern")
+
+    if submitted:
+        person.firstname     = firstname
+        person.lastname      = lastname
+        person.date_of_birth = int(dob)
+        person.gender        = gender
+
+        if picture:
+            ext           = picture.name.split(".")[-1]
+            pic_path      = f"data/images/Person{person.id}_{gender.lower()}.{ext}"
+            os.makedirs("data/images", exist_ok=True)
+            with open(pic_path, "wb") as f:
+                f.write(picture.read())
+            person.picture_path = pic_path
+
+        Person.save_persons(persons)
+        st.success("✅ Änderungen gespeichert.")
+        st.session_state.edit_mode = False
+        st.rerun()
+
+
+# --- Neuen Test hinzufügen ---
+
+def add_test_form(person):
+    st.subheader("➕ Neuen Test hinzufügen")
+    with st.form("add_test"):
+        date     = st.date_input("Testdatum", value=datetime.date.today())
+        file     = st.file_uploader("Datendatei (.txt oder .fit)", type=["txt", "fit"])
+        submitted = st.form_submit_button("Test speichern")
+
+    if submitted:
+        if not file:
+            st.error("Bitte eine Datei hochladen.")
+            return
+
+        ext      = "fit" if file.name.endswith(".fit") else "txt"
+        new_id   = Person.next_test_id(persons)
+        save_dir = "data/ekg_data"
+        os.makedirs(save_dir, exist_ok=True)
+        save_path = f"{save_dir}/{person.id:02d}_{new_id}.{ext}"
+
+        with open(save_path, "wb") as f:
+            f.write(file.read())
+
+        person.ekg_tests.append({
+            "id":          new_id,
+            "date":        str(date),
+            "result_link": save_path,
+        })
+        Person.save_persons(persons)
+        st.success(f"✅ Test {new_id} gespeichert ({ext.upper()}).")
+        st.rerun()
+
+
+# --- Seiten ---
+
+def home():
+    st.title("Willkommen in Ihrer digitalen EKG-Datenbank 🫀")
+    if st.button("Analyse starten"):
+        st.session_state.page = "select"
+        st.rerun()
+    st.divider()
+    with st.expander("➕ Neue Person hinzufügen"):
+        add_person_form()
+
+
+def select_person():
     st.header("Patient:in auswählen")
-
-    person_names = [p.get_full_name() for p in persons]
-
-    selected_name = st.selectbox(
-        "Bitte Patient:in auswählen:", 
-        person_names
-    )
-
-    person = [p for p in persons if p.get_full_name() == selected_name][0]
-
+    names    = [p.get_full_name() for p in persons]
+    selected = st.selectbox("Bitte Patient:in auswählen:", names)
+    person   = next(p for p in persons if p.get_full_name() == selected)
     if st.button("Weiter"):
         set_person(person)
         st.rerun()
 
 
-
-
-#Patient ansehen
-def show_person(selected_person):
-    """Zeigt die Seite mit den Details der ausgewählten Person, einschließlich Bild, Name, Geburtsjahr, Geschlecht und geschätzter maximaler Herzfrequenz."""
+def show_person(person):
     st.header("Patient:in anzeigen")
-
     col1, col2, col3 = st.columns([1, 2, 1])
     with col1:
-        if selected_person.picture_path:
-            st.image(selected_person.get_image(), width=200)
-        else:
-            st.info("Kein Bild vorhanden.")
+        if person.picture_path and os.path.exists(person.picture_path):
+            st.image(person.get_image(), width=200)
     with col2:
-        st.write(f"**Name:** {selected_person.firstname} {selected_person.lastname}")
-        st.write(f"**Geburtsjahr:** {selected_person.date_of_birth}")
-        st.write(f"**Geschlecht:** {selected_person.gender}")
-        st.write(f"**HR_max:** {selected_person.calc_max_heart_rate()} bpm")
-
+        st.write(f"**Name:** {person.firstname} {person.lastname}")
+        st.write(f"**Geburtsjahr:** {person.date_of_birth}")
+        st.write(f"**Geschlecht:** {person.gender}")
+        st.write(f"**HR_max:** {person.calc_max_heart_rate()} bpm")
     with col3:
-        anzahl_tests = len(selected_person.ekg_tests)
-
-        if anzahl_tests > 0:
-            st.success(f"✅ {anzahl_tests} EKG-Test(s)")
+        n = len(person.ekg_tests)
+        if n:
+            st.success(f"✅ {n} EKG-Test(s)")
         else:
-            st.error("❌ Keine EKG-Daten vorhanden")
-            st.stop()
+            st.warning("⚠️ Keine EKG-Daten")
 
+    # Buttons: Zurück | Editieren | Test hinzufügen
     st.button("⬅ Zurück", on_click=go_home)
 
+    with st.expander("✏️ Person editieren"):
+        edit_person_form(person)
+
+    with st.expander("➕ Test hinzufügen"):
+        add_test_form(person)
+        if not person.has_ekg_data():
+            st.stop()
 
 
-#EKG checken
-def check_ekg_data(selected_person):
-    st.header("EKG Daten überprüfen")
-
-    if not selected_person.has_ekg_data():
-        st.error("❌ Keine EKG-Daten vorhanden. Bitte einen anderen Patienten auswählen.")
-        st.stop()
-    st.success("EKG-Daten vorhanden!")
-
-# Testnummer auswählen
-def select_test_nr(selected_person):
-    st.header("EKG Test auswählen")
-    test_numbers = [f"Test {i+1}" for i in range(len(selected_person.ekg_tests))]
-    selected_test = st.selectbox("Bitte Test auswählen:", test_numbers)
-    return test_numbers.index(selected_test)
-
-# EKG Analyse
-def select_analysis(): 
-    return st.radio(
-        "Bitte Analyse auswählen:",
-        ["Durchschnittspuls berechnen", "EKG-Grafik anzeigen", "HRV berechnen"]
-    )
+def select_test_nr(person):
+    labels   = [f"Test {i+1}" for i in range(len(person.ekg_tests))]
+    selected = st.selectbox("Bitte Test auswählen:", labels)
+    return labels.index(selected)
 
 
+def run_analysis(person, test_nr):
+    ekg_dict = person.ekg_tests[test_nr]
+    ekg      = load_test(ekg_dict)
 
-def run_analysis(option, selected_person, test_nr):
-    if not selected_person.ekg_tests:
-        st.error("Keine EKG-Daten vorhanden")
-        st.stop()
-    ekg_data = selected_person.ekg_tests[test_nr]
-    ekg = load_test(ekg_data)  # nur einmal erstellen
+    option = st.radio("Analyse auswählen:", ["Durchschnittspuls", "EKG-Grafik", "HRV"])
 
-    if option == "Durchschnittspuls berechnen":
+    if option == "Durchschnittspuls":
         try:
-            bpm = ekg.estimate_hr()
-            st.write(f"Der durchschnittliche Puls beträgt: **{bpm:.2f} bpm**")
+            st.write(f"Durchschnittlicher Puls: **{ekg.estimate_hr():.2f} bpm**")
         except Exception as e:
-            st.error(f"Fehler beim Schätzen der Herzfrequenz: {e}")
+            st.error(f"Fehler: {e}")
 
-    elif option == "EKG-Grafik anzeigen":
+    elif option == "EKG-Grafik":
         col1, col2 = st.columns(2)
-        with col1:
-            st.markdown("**📅 Testdatum**")
-            st.caption(ekg_data["date"])
-        with col2:
-            st.markdown("**⏱️ Dauer**")
-            total_min = ekg.get_duration_minutes()
-            minutes = int(total_min)
-            seconds = int((total_min - minutes) * 60)
-            st.caption(f"{minutes} min {seconds} sek")
+        col1.caption(f"📅 {ekg_dict['date']}")
+        total_min = ekg.get_duration_minutes()
+        col2.caption(f"⏱️ {int(total_min)}m {int((total_min % 1) * 60)}s")
+
+        total_sec  = int(total_min * 60)
+        window_sec = 60 if ekg_dict.get("result_link", "").endswith(".fit") else 4
+        start_sec  = st.slider("Zeitbereich", 0, max(0, total_sec - window_sec), 0)
+        st.caption(f"Position: {start_sec // 60}m {start_sec % 60}s")
+
         try:
-            total = ekg.get_duration_minutes()
-            window_sec = 4
-            total_sec = int(total * 60)
-
-            start_sec = st.slider(
-                "Zeitbereich",
-                min_value=0,
-                max_value=total_sec - window_sec,
-                value=0,
-                step=1,
-                format="%d"
-            )
-
-            minutes = start_sec // 60
-            seconds = start_sec % 60
-            st.caption(f"Position: {minutes} min {seconds} sek")
-
-            start_min = start_sec / 60
-            end_min = (start_sec + window_sec) / 60
-
-            fig = ekg.plot_with_peaks_window(start_min=start_min, end_min=end_min)
+            fig = ekg.plot_with_peaks_window(start_sec / 60, (start_sec + window_sec) / 60)
             st.plotly_chart(fig, use_container_width=True, key=f"ekg_{start_sec}")
-        
         except Exception as e:
             st.error(f"Plot Fehler: {e}")
 
-    elif option == "HRV berechnen":
+    elif option == "HRV":
         try:
-         ekg = load_test(ekg_data)
-         rmssd = calculate_hrv_rmssd(ekg)
-        
-         if rmssd is not None:
-            st.write(f"Die Herzratenvariabilität (HRV) beträgt {rmssd:.2f} ms")
-         else:
-            st.warning("Nicht genügend Peaks für die HRV-Berechnung")
-            
-        # Diagnose-Kurzcheck für dich (kannst du später löschen)
-         st.divider()
-         st.caption(f"**Diagnose:** {len(ekg.peaks)} Peaks gefunden | Erste 5 Werte: {list(ekg.peaks[:5])} | fs: {getattr(ekg, 'fs', getattr(ekg, 'sampling_rate', 'Nicht gefunden'))}")
-            
+            rmssd = calculate_hrv_rmssd(ekg)
+            if rmssd is not None:
+                st.write(f"HRV (RMSSD): **{rmssd:.2f} ms**")
+            else:
+                st.warning("Nicht genügend Peaks für HRV-Berechnung.")
         except Exception as e:
-         st.error(f"Fehler bei der HRV-Berechnung: {e}")
+            st.error(f"Fehler: {e}")
 
 
-#Router
+# --- Router ---
+
 def main():
-    """Steuert die Navigation zwischen den verschiedenen Seiten der Anwendung basierend auf dem aktuellen Status in der Session."""
-    if st.session_state.page == "home":
+    if "page"          not in st.session_state: 
+        st.session_state.page           = "home"
+    if "selected_person" not in st.session_state: 
+        st.session_state.selected_person = None
+    if "edit_mode"     not in st.session_state: 
+        st.session_state.edit_mode      = False
+    if "add_test_mode" not in st.session_state: 
+        st.session_state.add_test_mode  = False
+
+    page = st.session_state.page
+
+    if page == "home":
         home()
-
-    elif st.session_state.page == "select":
-        select_person(persons)
-        
-
-
-    elif st.session_state.page == "analysis":
+    elif page == "select":
+        select_person()
+    elif page == "analysis":
         person = st.session_state.selected_person
-
         if person is None:
-            st.error("Kein Patient ausgewählt. Bitte zurückgehen.")
             st.session_state.page = "select"
-            st.stop()
-
+            st.rerun()
         show_person(person)
-    
-
-        test_nr = select_test_nr(person)  
-
-        st.subheader("Analyse durchführen")
-        option = select_analysis()
-
-        run_analysis(option, person, test_nr)
-
-if __name__ == "__main__":
-    main()
+        if person.has_ekg_data() and not st.session_state.get("edit_mode") and not st.session_state.get("add_test_mode"):
+            st.subheader("Analyse durchführen")
+            test_nr = select_test_nr(person)
+            run_analysis(person, test_nr)

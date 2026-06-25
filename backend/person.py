@@ -3,6 +3,7 @@ import json
 from PIL import Image
 import datetime 
 today = datetime.date.today().year
+DB_PATH = "data/persons.json"
 
 
 class Person:
@@ -23,27 +24,37 @@ class Person:
         self.ekg_tests = ekg_tests
         self.gender = gender
 
-    @staticmethod   
+    @staticmethod
     def load_persons():
-        """Lädt die Personendaten aus der JSON‑Datei und erstellt eine Liste von Person‑Objekten."""
-        with open("data/persons.json", "r", encoding="utf-8") as file:
-            person_data = json.load(file)
+        """Lädt alle Personen aus persons.json."""
+        with open(DB_PATH, "r", encoding="utf-8") as f:
+            return [Person(**p) for p in json.load(f)]
+    
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "date_of_birth": self.date_of_birth,
+            "firstname": self.firstname,
+            "lastname": self.lastname,
+            "picture_path": self.picture_path,
+            "ekg_tests": self.ekg_tests,
+            "gender": self.gender,
+        }
 
-        persons = []
-
-        for person_dict in person_data:
-            person = Person(
-                person_dict["id"],
-                person_dict["date_of_birth"],
-                person_dict["firstname"],
-                person_dict["lastname"],
-                person_dict["picture_path"],
-                person_dict["ekg_tests"],
-                person_dict["gender"]
-            )
-            persons.append(person)
-
-        return persons
+    @staticmethod
+    def save_persons(persons: list):
+        """Schreibt die Personenliste zurück in persons.json."""
+        with open(DB_PATH, "w", encoding="utf-8") as f:
+            json.dump([p.to_dict() for p in persons], f, ensure_ascii=False, indent=4)
+ 
+    @staticmethod
+    def next_person_id(persons: list) -> int:
+        return max((p.id for p in persons), default=0) + 1
+ 
+    @staticmethod
+    def next_test_id(persons: list) -> int:
+        all_ids = [t["id"] for p in persons for t in p.ekg_tests]
+        return max(all_ids, default=100) + 1
 
     def get_age(self):
         """Output: Alter der Person."""    
