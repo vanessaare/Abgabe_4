@@ -206,13 +206,30 @@ def show_person(person):
 
 # --- Test auswählen ---
 
+#def select_test_nr(person):
+
+    #labels   = [f"Test {i+1}" for i in range(len(person.ekg_tests))]
+    #selected = st.selectbox("Bitte Test auswählen:", labels)
+
+    #return labels.index(selected)
+
 def select_test_nr(person):
 
-    labels   = [f"Test {i+1}" for i in range(len(person.ekg_tests))]
+    labels = [f"Test {i+1}" for i in range(len(person.ekg_tests))]
+
+    if not labels:
+        st.info("Keine Tests vorhanden.")
+        return None
+
     selected = st.selectbox("Bitte Test auswählen:", labels)
+    idx = labels.index(selected)
 
-    return labels.index(selected)
+    if st.button("🗑️ Test löschen"):
+        del person.ekg_tests[idx]
+        st.success(f"{selected} wurde gelöscht.")
+        st.experimental_rerun()
 
+    return idx
 
 # --- Analyse durchführen ---
 
