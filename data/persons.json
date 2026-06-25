@@ -111,7 +111,7 @@
         "date_of_birth": 2002,
         "firstname": "Julia",
         "lastname": "Fischer",
-        "picture_path": "data/images/Person1_female.jpg", 
+        "picture_path": "data/images/Person_07_ChatGPT.png", 
         "ekg_tests": [
             {
                 "id": 107,

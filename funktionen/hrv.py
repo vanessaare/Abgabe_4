@@ -26,7 +26,7 @@ def calculate_hrv_rmssd(ekg, min_rr=300.0, max_rr=1500.0, max_rr_diff=400.0):
     """
     # 1. R-Peaks extrahieren
     peaks = None
-    if hasattr(ekg, "peaks"):
+    if hasattr(ekg, "peaks")and len(ekg.peaks) > 0:
         peaks = ekg.peaks
     elif hasattr(ekg, "r_peaks"):
         peaks = ekg.r_peaks
