@@ -104,5 +104,21 @@
             }
         ],
         "gender": "Male"
+    }, 
+    
+    {
+        "id": 7,
+        "date_of_birth": 2002,
+        "firstname": "Julia",
+        "lastname": "Fischer",
+        "picture_path": "data/images/Person1_female.jpg", 
+        "ekg_tests": [
+            {
+                "id": 107,
+                "date": "2026-01-10",
+                "result_link": "data/ekg_data/07_activity.fit"
+            }
+        ],
+        "gender": "Female"
     }
 ]

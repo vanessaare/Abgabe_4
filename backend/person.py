@@ -1,4 +1,4 @@
-from backend.ekgdata import EKGdata
+from backend.loader import load_test
 import json
 from PIL import Image
 import datetime 
@@ -90,5 +90,5 @@ class Person:
         """Output: EKGdata‑Objekt des ersten EKG‑Tests oder None, wenn keine Daten vorhanden."""
         if not self.has_ekg_data():
             return None
-        return EKGdata(self.ekg_tests[0])
+        return load_test(self.ekg_tests[0])
     

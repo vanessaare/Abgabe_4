@@ -1,8 +1,9 @@
 
 import streamlit as st
 from backend.person import Person 
-from backend.ekgdata import EKGdata
+#from backend.ekgdata import EKGdata
 from funktionen.hrv import calculate_hrv_rmssd
+from backend.loader import load_test
 
 
 if "page" not in st.session_state:
@@ -127,7 +128,7 @@ def run_analysis(option, selected_person, test_nr):
         st.error("Keine EKG-Daten vorhanden")
         st.stop()
     ekg_data = selected_person.ekg_tests[test_nr]
-    ekg = EKGdata(ekg_data)  # nur einmal erstellen
+    ekg = load_test(ekg_data)  # nur einmal erstellen
 
     if option == "Durchschnittspuls berechnen":
         try:
@@ -176,7 +177,7 @@ def run_analysis(option, selected_person, test_nr):
 
     elif option == "HRV berechnen":
         try:
-         ekg = EKGdata(ekg_data)
+         ekg = load_test(ekg_data)
          rmssd = calculate_hrv_rmssd(ekg)
         
          if rmssd is not None:
