@@ -2,23 +2,6 @@
 
 import numpy as np
 
-#def calculate_hrv_rmssd(ekg_data):
-#    """
-#    Output: HRV (RMSSD) in ms.
-#    """
-#    peaks = ekg_data.detect_peaks()  # falls du so eine Funktion hast
-#    rr = np.diff(peaks)  # RR-Intervalle in ms
-#    return np.sqrt(np.mean(np.square(np.diff(rr))))
-
-#def calculate_hrv_rmssd(self):
-   # peaks = self.detect_peaks()          # Zeitpunkte der R‑Peaks in ms
-   # if len(peaks) < 3:
-    #    return None
-
-   # rr = np.diff(peaks)                  # RR‑Intervalle
-   # rmssd = np.sqrt(np.mean(np.square(np.diff(rr))))
-   # return rmssd
-
 def calculate_hrv_rmssd(ekg, min_rr=300.0, max_rr=1500.0, max_rr_diff=400.0):
     """
     Berechnet den RMSSD (ms) aus einem EKGdata-Objekt.

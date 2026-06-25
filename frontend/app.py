@@ -230,10 +230,22 @@ def show_person(person):
 
 def select_test_nr(person):
 
-    labels   = [f"Test {i+1}" for i in range(len(person.ekg_tests))]
-    selected = st.selectbox("Bitte Test auswählen:", labels)
+    labels = [f"Test {i+1}" for i in range(len(person.ekg_tests))]
 
-    return labels.index(selected)
+    if not labels:
+        st.info("Keine Tests vorhanden.")
+        return None
+
+    selected = st.selectbox("Bitte Test auswählen:", labels)
+    idx = labels.index(selected)
+
+    if st.session_state.get("role") != "patient":
+        if st.button("🗑️ Löschen"):
+            del person.ekg_tests[idx]
+            st.success(f"{selected} wurde gelöscht.")
+            st.experimental_rerun()
+
+    return idx
 
 
 # --- Analyse durchführen ---
