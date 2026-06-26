@@ -43,6 +43,21 @@ def create_patient_account(person, username=None, password=None):
     return username, password
 
 
+def delete_patient_account(person_id):
+    username_to_delete = None
+
+    for username, user in USERS.items():
+        if user.get("person_id") == person_id:
+            username_to_delete = username
+            break
+
+    if username_to_delete:
+        del USERS[username_to_delete]
+        save_users()
+
+
+
+
 def login():
 
     if "logged_in" not in st.session_state:
