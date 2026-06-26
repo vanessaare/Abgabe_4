@@ -30,5 +30,15 @@
     "password": "blablub17",
     "role": "patient",
     "person_id": 17
+  },
+  "patient_michaela_shiffrin2": {
+    "password": "micshif18",
+    "role": "patient",
+    "person_id": 18
+  },
+  "patient_gaerbert_sauer": {
+    "password": "g\u00e4rsaue19",
+    "role": "patient",
+    "person_id": 19
   }
 }
