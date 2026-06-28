@@ -192,7 +192,7 @@ class App:
         st.header(person.get_full_name())
 
         # Tabs für Übersichtlichkeit
-        tab_info, tab_tests = st.tabs(["Allgemeine Informationen", "📊 Auswertungen"])
+        tab_info, tab_tests, tab_comparison = st.tabs(["Allgemeine Informationen", "📊 Auswertungen", "↔ Vergleich"])
 
         # ---------------------------------------------------------
         # TAB 1 – Allgemeine Informationen
@@ -229,9 +229,6 @@ class App:
             else:
                 st.info("Sie haben keine Berechtigung, Daten zu bearbeiten oder neue Tests hinzuzufügen.")
 
-        # ---------------------------------------------------------
-        # TAB 2 – Auswertungen
-        # ---------------------------------------------------------
         with tab_tests:
             st.subheader("EKG & HRV Auswertungen")
 
