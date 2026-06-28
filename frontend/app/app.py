@@ -32,7 +32,7 @@ class App:
                     "➕ Neuen Patienten hinzufügen",
                     key="home_add_patient",
                     use_container_width=True,
-                    type="primary"
+                    type="secondary"
                 ):
                     st.session_state.page = "add_person_form"
                     st.rerun()
@@ -41,7 +41,8 @@ class App:
                 if st.button(
                     "🔍 Patienten suchen",
                     key="home_search_patient",
-                    use_container_width=True
+                    use_container_width=True,
+                    type="primary"
                 ):
                     st.session_state.page = "select"
                     st.rerun()
@@ -52,7 +53,8 @@ class App:
                 if st.button(
                     "📊 Statistiken",
                     key="home_stats",
-                    use_container_width=True
+                    use_container_width=True,
+                    type="secondary"
                 ):
                     st.info("Statistik-Seite folgt.")
 
@@ -60,7 +62,8 @@ class App:
                 if st.button(
                     "⚙️ Einstellungen",
                     key="home_settings",
-                    use_container_width=True
+                    use_container_width=True,
+                    type="secondary"
                 ):
                     st.info("Einstellungen folgen.")
 
@@ -207,7 +210,7 @@ class App:
             else:
                 st.warning("⚠️ Keine EKG-Daten")
 
-        st.button("⬅ Zurück", key="show_person_back", on_click=self._go_home)
+        st.button("⬅ Zurück", key="show_person_back", on_click=Navigation.go_select)
 
         if st.session_state.get("role") != "patient":
             with st.expander("✏️ Person editieren"):
@@ -243,11 +246,12 @@ class App:
 
     def _go_home(self):
         st.session_state.page = "home"
-        st.rerun()
+
+    def _go_select(self):
+        st.session_state.page = "select"
 
     def _show_add_person_form(self):
         st.session_state.page = "add_person_form"
-        st.rerun()
 
     # --- Person editieren ---
 
