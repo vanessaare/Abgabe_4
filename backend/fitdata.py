@@ -92,7 +92,15 @@ class FITdata:
     # ------------------------------------------------------------------
 
     def estimate_hr(self) -> float:
-        return float(self._hr_df["heart_rate"].mean())
+        hr = self._hr_df["heart_rate"]
+
+        # Realistische Werte filtern
+        hr_filtered = hr[(hr > 35) & (hr < 210)]
+
+        if len(hr_filtered) == 0:
+            return float("nan")   # oder 0, je nach App-Logik
+
+        return float(hr_filtered.mean())
 
     def find_peaks(self, threshold=350, respacing_factor=5):
         """Peaks im synthetischen EKG (R-Zacken)."""

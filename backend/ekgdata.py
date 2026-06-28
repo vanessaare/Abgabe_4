@@ -73,19 +73,27 @@ class EKGdata:
         rmssd = np.sqrt(np.mean(np.square(np.diff(rr))))
         return rmssd
     
-    def estimate_hr(self):
-        """Input: keine (beinhaltet erkannte Peaks).
-        Output: Geschätzte Herzfrequenz in BPM.
-        """
+    def estimate_hr(self) -> float:
+        # Peaks sicherstellen
         if not hasattr(self, "peaks"):
             self.find_peaks()
-        peak_times = self.df["Zeit in ms"].iloc[self.peaks].values
-        rr_intervals = np.diff(peak_times)  
-        avg_rr = np.mean(rr_intervals)
-        bpm = 30000 / avg_rr  
-        return bpm
-    
 
+        # Peak-Zeitpunkte holen
+        peak_times = self.df.loc[self.peaks, "Zeit in ms"].values
+
+        # RR-Intervalle berechnen
+        rr_intervals = np.diff(peak_times)
+
+        # Realistische RR-Intervalle filtern (entspricht 35–210 bpm)
+        rr_filtered = rr_intervals[(rr_intervals > 140) & (rr_intervals < 900)]
+
+        if len(rr_filtered) == 0:
+            return float("nan")
+
+        avg_rr = np.mean(rr_filtered)
+
+        bpm = 60000.0 / avg_rr
+        return float(bpm)
 
     def plot_with_peaks(self):
         """Input: keine.
