@@ -9,6 +9,5 @@ def filter_persons(persons, name_filter):
             p for p in filtered
             if all(term in p.get_full_name().lower() for term in search_terms)
         ]
-    else:
-        return "Keine Person gefunden."
+
     return filtered

@@ -11,6 +11,7 @@ class PersonManager:
     def get_filtered(self, name):
         return filter_persons(self.persons, name)
 
+
     def delete_person(self, person):
         self.persons = [p for p in self.persons if p.id != person.id]
         Person.save_persons(self.persons)
@@ -20,3 +21,4 @@ class PersonManager:
 
         st.success(f"✅ Person {person.get_full_name()} wurde gelöscht.")
         st.rerun()
+

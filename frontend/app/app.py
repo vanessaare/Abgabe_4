@@ -30,6 +30,7 @@ class App:
             with col1:
                 if st.button(
                     "➕ Neuen Patienten hinzufügen",
+                    key="home_add_patient",
                     use_container_width=True,
                     type="primary"
                 ):
@@ -39,6 +40,7 @@ class App:
             with col2:
                 if st.button(
                     "🔍 Patienten suchen",
+                    key="home_search_patient",
                     use_container_width=True
                 ):
                     st.session_state.page = "select"
@@ -49,6 +51,7 @@ class App:
             with col3:
                 if st.button(
                     "📊 Statistiken",
+                    key="home_stats",
                     use_container_width=True
                 ):
                     st.info("Statistik-Seite folgt.")
@@ -56,6 +59,7 @@ class App:
             with col4:
                 if st.button(
                     "⚙️ Einstellungen",
+                    key="home_settings",
                     use_container_width=True
                 ):
                     st.info("Einstellungen folgen.")
@@ -71,6 +75,7 @@ class App:
 
             if st.button(
                 "🫀 Meine EKG-Daten anzeigen",
+                key="home_patient_data",
                 use_container_width=True,
                 type="primary"
             ):
@@ -84,7 +89,7 @@ class App:
     def select_person(self):
         st.subheader("🔍 Filter")
 
-        st.button("⬅ Zurück", on_click=Navigation.go_home)
+        st.button("⬅ Zurück", key="select_back", on_click=Navigation.go_home)
 
         name_filter = st.text_input("Name suchen")
 
@@ -104,13 +109,13 @@ class App:
             col1, col2 = st.columns(2)
 
             with col1:
-                if st.button("Weiter"):
+                if st.button("Weiter", key="select_continue"):
                     Navigation.set_person(selected_person)
                     st.rerun()
 
             with col2:
                 if st.session_state.role != "patient":
-                    if st.button("🗑️"):
+                    if st.button("🗑️", key="select_delete"):
                         self.person_manager.delete_person(selected_person)
 
         if st.session_state.get("role") != "patient":
@@ -122,7 +127,7 @@ class App:
 
     def add_person_form(self):
         st.subheader("➕ Neue Person hinzufügen")
-        st.button("⬅ Zurück", on_click=Navigation.go_home)
+        st.button("⬅ Zurück", key="add_person_back", on_click=Navigation.go_home)
         with st.form("add_person"):
             col1, col2 = st.columns(2)
             firstname = col1.text_input("Vorname")
@@ -167,14 +172,14 @@ class App:
             with col1:
                 st.button(
                     "Zurück zur Startseite",
-                    key="back_to_home",
+                    key="add_person_back_to_home",
                     on_click=self._go_home,
                 )
 
             with col2:
                 st.button(
                     "Weiteren Patienten hinzufügen",
-                    key="add_another_patient",
+                    key="add_person_add_another",
                     on_click=self._show_add_person_form,
                 )
 
@@ -202,7 +207,7 @@ class App:
             else:
                 st.warning("⚠️ Keine EKG-Daten")
 
-        st.button("⬅ Zurück", on_click=self._go_home)
+        st.button("⬅ Zurück", key="show_person_back", on_click=self._go_home)
 
         if st.session_state.get("role") != "patient":
             with st.expander("✏️ Person editieren"):
@@ -228,7 +233,7 @@ class App:
         idx = labels.index(selected)
 
         if st.session_state.get("role") != "patient":
-            if st.button("🗑️ Löschen"):
+            if st.button("🗑️ Löschen", key="select_test_delete"):
                 del person.ekg_tests[idx]
                 Person.save_persons(self.person_manager.persons)
                 st.success(f"{selected} wurde gelöscht.")
