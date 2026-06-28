@@ -189,39 +189,73 @@ class App:
     # --- Person anzeigen ---
 
     def show_person(self, person):
-        st.header("Patient:in anzeigen")
+        st.header(person.get_full_name())
 
-        col1, col2, col3 = st.columns([1, 2, 1])
+        # Tabs für Übersichtlichkeit
+        tab_info, tab_tests = st.tabs(["Allgemeine Informationen", "📊 Auswertungen"])
 
-        with col1:
-            if person.picture_path and os.path.exists(person.picture_path):
-                st.image(person.get_image(), width=200)
+        # ---------------------------------------------------------
+        # TAB 1 – Allgemeine Informationen
+        # ---------------------------------------------------------
+        with tab_info:
+            col1, col2, col3 = st.columns([1, 2, 1])
 
-        with col2:
-            st.write(f"**Name:** {person.firstname} {person.lastname}")
-            st.write(f"**Geburtsjahr:** {person.date_of_birth}")
-            st.write(f"**Geschlecht:** {person.gender}")
-            st.write(f"**HR_max:** {person.calc_max_heart_rate()} bpm")
+            with col1:
+                if person.picture_path and os.path.exists(person.picture_path):
+                    st.image(person.get_image(), width=200)
 
-        with col3:
-            n = len(person.ekg_tests)
-            if n:
-                st.success(f"✅ {n} EKG-Test(s)")
+            with col2:
+                st.write(f"**Name:** {person.firstname} {person.lastname}")
+                st.write(f"**Geburtsjahr:** {person.date_of_birth}")
+                st.write(f"**Geschlecht:** {person.gender}")
+                st.write(f"**HR_max:** {person.calc_max_heart_rate()} bpm")
+
+            with col3:
+                n = len(person.ekg_tests)
+                if n:
+                    st.success(f"✅ {n} EKG-Test(s)")
+                else:
+                    st.warning("⚠️ Keine EKG-Daten")
+
+            st.button("⬅ Zurück", key="show_person_back", on_click=Navigation.go_select)
+
+            # Editier- und Test-Hinzufügen-Bereich nur für berechtigte Rollen
+            if st.session_state.get("role") != "patient":
+                with st.expander("✏️ Person editieren"):
+                    self.edit_person_form(person)
+
+                with st.expander("➕ Test hinzufügen"):
+                    self.add_test_form(person)
             else:
-                st.warning("⚠️ Keine EKG-Daten")
+                st.info("Sie haben keine Berechtigung, Daten zu bearbeiten oder neue Tests hinzuzufügen.")
 
-        st.button("⬅ Zurück", key="show_person_back", on_click=Navigation.go_select)
+        # ---------------------------------------------------------
+        # TAB 2 – Auswertungen
+        # ---------------------------------------------------------
+        with tab_tests:
+            st.subheader("EKG & HRV Auswertungen")
 
-        if st.session_state.get("role") != "patient":
-            with st.expander("✏️ Person editieren"):
-                self.edit_person_form(person)
+            if not person.ekg_tests:
+                st.info("Keine EKG-Daten vorhanden.")
+            else:
+                # Test-Auswahl
+                labels = [f"Test {i+1}" for i in range(len(person.ekg_tests))]
+                selected = st.selectbox("Bitte Test auswählen:", labels, key="test_select_show_person")
+                idx = labels.index(selected)
+                test = person.ekg_tests[idx]
 
-            with st.expander("➕ Test hinzufügen"):
-                self.add_test_form(person)
-                if not person.has_ekg_data():
-                    st.stop()
-        else:
-            st.info("Sie haben keine Berechtigung, Daten zu bearbeiten oder neue Tests hinzuzufügen.")
+                st.write(f"**Test-ID:** {test['id']}")
+                st.write(f"**Datum:** {test.get('date', 'unbekannt')}")
+
+                # Beispiel: EKG-Daten anzeigen
+                if "ekg" in test:
+                    st.line_chart(test["ekg"])
+
+                # Beispiel: HRV-Daten anzeigen
+                if "hrv" in test:
+                    st.line_chart(test["hrv"])
+
+                self.analysis_manager.run_analysis(person, idx)
 
     # --- Test auswählen ---
 
@@ -246,9 +280,6 @@ class App:
 
     def _go_home(self):
         st.session_state.page = "home"
-
-    def _go_select(self):
-        st.session_state.page = "select"
 
     def _show_add_person_form(self):
         st.session_state.page = "add_person_form"
@@ -359,11 +390,6 @@ class App:
                 st.rerun()
 
             self.show_person(person)
-
-            if person.has_ekg_data() and not st.session_state.get("edit_mode") and not st.session_state.get("add_test_mode"):
-                st.subheader("Analyse durchführen")
-                test_nr = self.select_test_nr(person)
-                self.analysis_manager.run_analysis(person, test_nr)
 
 
 def main():

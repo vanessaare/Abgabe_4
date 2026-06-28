@@ -10,7 +10,11 @@ class AnalysisManager:
         ekg_dict = person.ekg_tests[test_nr]
         ekg      = load_test(ekg_dict)
 
-        option = st.radio("Analyse auswählen:", ["Durchschnittspuls", "EKG-Grafik", "HRV"])
+        option = st.radio(
+            "Analyse auswählen:",
+            ["Durchschnittspuls", "EKG-Grafik", "HRV"],
+            key=f"analysis_radio_{person.id}_{test_nr}",
+        )
 
         if option == "Durchschnittspuls":
             try:
