@@ -191,6 +191,26 @@ class App:
     def show_person(self, person):
         st.header(person.get_full_name())
 
+        # Tab-Styling: Tab-Buttons breiter über die ganze Leiste verteilen
+        st.markdown(
+            """
+            <style>
+                div[role='tablist'] {
+                    display: flex;
+                    justify-content: space-between;
+                }
+                div[role='tablist'] button[role='tab'] {
+                    flex: 1 1 auto;
+                    min-width: 0;
+                }
+                div[role='tablist'] button[role='tab'] span {
+                    white-space: normal;
+                }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+
         # Tabs für Übersichtlichkeit
         tab_info, tab_tests, tab_comparison = st.tabs(["Allgemeine Informationen", "📊 Auswertungen", "↔ Vergleich"])
 
