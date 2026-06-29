@@ -5,7 +5,7 @@
             "date_of_birth": 2001,
             "firstname": "Anne",
             "lastname": "Mayer",
-            "picture_path": "data/images/Person1_female.jpg",
+            "picture_path": "data/images/Person1_female.png",
             "ekg_tests": [
                 {
                     "id": 101,
@@ -25,7 +25,7 @@
             "date_of_birth": 1998,
             "firstname": "Luka",
             "lastname": "Huber",
-            "picture_path": "data/images/Person1_male.webp",
+            "picture_path": "data/images/Person1_male.png",
             "ekg_tests": [
                 {
                     "id": 102,
@@ -40,7 +40,7 @@
             "date_of_birth": 2003,
             "firstname": "Sophie",
             "lastname": "Gruber",
-            "picture_path": "data/images/Person2_female.webp",
+            "picture_path": "data/images/Person2_female.png",
             "ekg_tests": [
                 {
                     "id": 103,
@@ -55,7 +55,7 @@
             "date_of_birth": 1995,
             "firstname": "David",
             "lastname": "Schneider",
-            "picture_path": "data/images/Person2_male.webp",
+            "picture_path": "data/images/Person2_male.png",
             "ekg_tests": [
                 {
                     "id": 104,
@@ -70,7 +70,7 @@
             "date_of_birth": 2000,
             "firstname": "Laura",
             "lastname": "Berger",
-            "picture_path": "data/images/Person3_female.webp",
+            "picture_path": "data/images/Person3_female.png",
             "ekg_tests": [
                 {
                     "id": 105,
@@ -85,7 +85,7 @@
             "date_of_birth": 1997,
             "firstname": "Michael",
             "lastname": "Wagner",
-            "picture_path": "data/images/Person3_male.webp",
+            "picture_path": "data/images/Person3_male.png",
             "ekg_tests": [
                 {
                     "id": 106,
@@ -100,7 +100,7 @@
             "date_of_birth": 2002,
             "firstname": "Violet",
             "lastname": "Sorrengail",
-            "picture_path": "data/images/Person14_female.webp",
+            "picture_path": "data/images/Person4_female.png",
             "ekg_tests": [],
             "gender": "Female"
         },
@@ -109,7 +109,7 @@
             "date_of_birth": 1987,
             "firstname": "Roy",
             "lastname": "Bianco",
-            "picture_path": "data/images/Person16_male.webp",
+            "picture_path": "data/images/Person4_male.png",
             "ekg_tests": [
                 {
                     "id": 205,
@@ -124,7 +124,7 @@
             "date_of_birth": 1995,
             "firstname": "Michaela",
             "lastname": "Shiffrin",
-            "picture_path": "data/images/Person17_female.webp",
+            "picture_path": "data/images/Person5_female.png",
             "ekg_tests": [
                 {
                     "id": 206,
