@@ -212,7 +212,7 @@ class App:
         )
 
         # Tabs für Übersichtlichkeit
-        tab_info, tab_tests, tab_comparison = st.tabs(["Allgemeine Informationen", "📊 Auswertungen", "↔ Vergleich"])
+        tab_info, tab_tests, tab_comparison = st.tabs(["🛈 Allgemeine Informationen", "📊 Auswertungen", "↔ Vergleich"])
 
         # ---------------------------------------------------------
         # TAB 1 – Allgemeine Informationen
