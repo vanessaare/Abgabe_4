@@ -9,6 +9,13 @@ from .person_manager import PersonManager
 from .analysis_manager import AnalysisManager
 from .navigation import Navigation
 from .session import SessionManager
+from .components.compare import (
+    plot_ekg_overlay,
+    get_metric_value,
+    get_test_duration_seconds,
+    get_window_seconds,
+)
+from .components.utlispatient import get_other_patients, get_comparable_metrics
 
 
 class App:
@@ -261,6 +268,13 @@ class App:
                 idx = labels.index(selected)
                 test = person.ekg_tests[idx]
 
+                if st.session_state.get("role") != "patient":
+                    if st.button("Löschen", key="delete_selected_test"):
+                        del person.ekg_tests[idx]
+                        Person.save_persons(self.person_manager.persons)
+                        st.success(f"Test {test['id']} wurde gelöscht.")
+                        st.rerun()
+
                 st.write(f"**Test-ID:** {test['id']}")
                 st.write(f"**Datum:** {test.get('date', 'unbekannt')}")
 
@@ -274,26 +288,185 @@ class App:
 
                 self.analysis_manager.run_analysis(person, idx)
 
-    # --- Test auswählen ---
+        with tab_comparison:
+            st.subheader("↔ Vergleich von EKG-Daten")
+            st.caption("Patientenvergleich.")
 
-    def select_test_nr(self, person):
-        labels = [f"Test {i+1}" for i in range(len(person.ekg_tests))]
+            if st.session_state.role in ["admin", "doctor"]:
+                if len(person.ekg_tests) >= 2:
+                    same_patient_compare = st.checkbox(
+                        "Mit zweitem Test desselben Patienten vergleichen",
+                        key="admin_same_patient_compare",
+                    )
+                else:
+                    same_patient_compare = False
 
-        if not labels:
-            st.info("Keine Tests vorhanden.")
-            return None
+                if same_patient_compare:
+                    st.markdown("**Vergleich desselben Patienten**")
+                    test_options_a = [f"Test {t['id']} ({t.get('date', 'ohne Datum')})" for t in person.ekg_tests]
+                    selected_test_a = st.selectbox(
+                        "Erster Test",
+                        test_options_a,
+                        key="compare_test_a",
+                    )
+                    selected_test_b = st.selectbox(
+                        "Zweiter Test",
+                        test_options_a,
+                        key="compare_test_b",
+                    )
+                    other_person = person
+                else:
+                    other_patients = get_other_patients(person, self.person_manager.persons)
+                    if not other_patients:
+                        st.info("Es sind keine weiteren Patienten vorhanden, mit denen verglichen werden kann.")
+                        other_person = None
+                    else:
+                        col_left, col_right = st.columns([2, 2])
 
-        selected = st.selectbox("Bitte Test auswählen:", labels)
-        idx = labels.index(selected)
+                        with col_left:
+                            st.markdown("**Patient A**")
+                            st.write(person.get_full_name())
+                            test_options_a = [f"Test {t['id']} ({t.get('date', 'ohne Datum')})" for t in person.ekg_tests]
+                            selected_test_a = st.selectbox(
+                                "Test auswählen",
+                                test_options_a if test_options_a else ["Keine Tests verfügbar"],
+                                key="compare_test_a",
+                            )
 
-        if st.session_state.get("role") != "patient":
-            if st.button("🗑️ Löschen", key="select_test_delete"):
-                del person.ekg_tests[idx]
-                Person.save_persons(self.person_manager.persons)
-                st.success(f"{selected} wurde gelöscht.")
-                st.rerun()
+                        with col_right:
+                            st.markdown("**Patient B**")
+                            names = [p.get_full_name() for p in other_patients]
+                            selected_name = st.selectbox(
+                                "Bitte zweiten Patienten auswählen:",
+                                names,
+                                key="compare_other_patient",
+                            )
+                            other_person = next(p for p in other_patients if p.get_full_name() == selected_name)
+                            test_options_b = [f"Test {t['id']} ({t.get('date', 'ohne Datum')})" for t in other_person.ekg_tests]
+                            selected_test_b = st.selectbox(
+                                "Test auswählen",
+                                test_options_b if test_options_b else ["Keine Tests verfügbar"],
+                                key="compare_test_b",
+                            )
 
-        return idx
+                if other_person is not None and person.ekg_tests and other_person.ekg_tests:
+                    if selected_test_a == "Keine Tests verfügbar" or selected_test_b == "Keine Tests verfügbar":
+                        st.info("Für einen der beiden ausgewählten Tests sind noch keine Daten vorhanden.")
+                    elif same_patient_compare and selected_test_a == selected_test_b:
+                        st.warning("Bitte wählen Sie zwei unterschiedliche Tests desselben Patienten aus.")
+                    else:
+                        selected_metrics = st.session_state.get("compare_metrics", get_comparable_metrics())
+
+                        duration_a = get_test_duration_seconds(person, selected_test_a)
+                        duration_b = get_test_duration_seconds(other_person, selected_test_b)
+                        common_duration = min(duration_a, duration_b)
+                        window_sec = min(get_window_seconds(person, selected_test_a), get_window_seconds(other_person, selected_test_b))
+                        max_start = max(0, int(round(common_duration - window_sec)))
+                        start_sec = 0
+                        if max_start > 0:
+                            start_sec = st.slider(
+                                "Zeitbereich",
+                                0,
+                                max_start,
+                                0,
+                                key="compare_time_slider",
+                            )
+                        st.caption(f"Position: {start_sec // 60}m {start_sec % 60}s")
+
+                        try:
+                            fig, norm_stats = plot_ekg_overlay(
+                                person,
+                                other_person,
+                                selected_test_a=selected_test_a,
+                                selected_test_b=selected_test_b,
+                                start_sec=start_sec,
+                                window_sec=window_sec,
+                                label_a="Test A",
+                                label_b="Test B",
+                            )
+                            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": True})
+
+                            selected_metrics = get_comparable_metrics()
+                            metrics_a = {metric: get_metric_value(person, selected_test_a, metric) for metric in selected_metrics}
+                            metrics_b = {metric: get_metric_value(other_person, selected_test_b, metric) for metric in selected_metrics}
+
+                            if selected_metrics:
+                                st.markdown("**Vergleichswerte**")
+                                rows = []
+                                for metric in selected_metrics:
+                                    rows.append({
+                                        "Metrik": metric,
+                                        "Test A": f"<span style=\"color:#2563eb;font-weight:bold;\">{metrics_a[metric]}</span>",
+                                        "Test B": f"<span style=\"color:#dc2626;font-weight:bold;\">{metrics_b[metric]}</span>",
+                                    })
+
+                                html = "<table style='width:100%;border-collapse:collapse;'>"
+                                html += "<thead><tr><th style='text-align:left;padding:8px;border-bottom:1px solid #ddd;'>Metrik</th><th style='text-align:left;padding:8px;border-bottom:1px solid #ddd;'>Test A</th><th style='text-align:left;padding:8px;border-bottom:1px solid #ddd;'>Test B</th></tr></thead><tbody>"
+                                for row in rows:
+                                    html += f"<tr><td style='padding:8px;border-bottom:1px solid #eee;'>{row['Metrik']}</td><td style='padding:8px;border-bottom:1px solid #eee;'>{row['Test A']}</td><td style='padding:8px;border-bottom:1px solid #eee;'>{row['Test B']}</td></tr>"
+                                html += "</tbody></table>"
+                                st.markdown(html, unsafe_allow_html=True)
+
+                        except Exception as exc:
+                            st.error(f"Der Vergleich konnte nicht erstellt werden: {exc}")
+                else:
+                    if not same_patient_compare:
+                        st.info("Für mindestens einen der beiden Patienten liegen noch keine EKG-Daten vor.")
+
+            else:
+                st.markdown("**Eigener Testvergleich für Patienten**")
+                test_options = [f"Test {t['id']} ({t.get('date', 'ohne Datum')})" for t in person.ekg_tests]
+
+                if len(test_options) < 2:
+                    st.info("Mindestens zwei eigene Tests werden benötigt, um einen Vergleich durchzuführen.")
+                else:
+                    col_a, col_b = st.columns(2)
+                    with col_a:
+                        selected_test_a = st.selectbox(
+                            "Erster eigener Test",
+                            test_options,
+                            key="patient_compare_test_a",
+                        )
+                    with col_b:
+                        selected_test_b = st.selectbox(
+                            "Zweiter eigener Test",
+                            test_options,
+                            key="patient_compare_test_b",
+                        )
+
+                    if selected_test_a == selected_test_b:
+                        st.warning("Bitte wählen Sie zwei unterschiedliche Tests für den Vergleich aus.")
+                    else:
+                        duration_a = get_test_duration_seconds(person, selected_test_a)
+                        duration_b = get_test_duration_seconds(person, selected_test_b)
+                        common_duration = min(duration_a, duration_b)
+                        window_sec = min(get_window_seconds(person, selected_test_a), get_window_seconds(person, selected_test_b))
+                        max_start = max(0, int(round(common_duration - window_sec)))
+                        start_sec = 0
+                        if max_start > 0:
+                            start_sec = st.slider(
+                                "Zeitbereich",
+                                0,
+                                max_start,
+                                0,
+                                key="compare_norm_time_slider",
+                            )
+                        st.caption(f"Position: {start_sec // 60}m {start_sec % 60}s")
+                        try:
+                            fig, _ = plot_ekg_overlay(
+                                person,
+                                person,
+                                selected_test_a=selected_test_a,
+                                selected_test_b=selected_test_b,
+                                start_sec=start_sec,
+                                window_sec=window_sec,
+                                label_a="Test A",
+                                label_b="Test B",
+                                title="Vergleich der 2 Tests",
+                            )
+                            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": True})
+                        except Exception as exc:
+                            st.error(f"Der Vergleich konnte nicht erstellt werden: {exc}")
 
     def _go_home(self):
         st.session_state.page = "home"

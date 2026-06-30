@@ -2,7 +2,7 @@
 
 **Teilnehmerinnen:** Melanie Pfusterer, Lisa Raffler, Vanessa Reich
 
-Das Projekt erstellt mit Hilfe von Streamlit eine interaktive Webseite, die als digitale Datenbank für Probandinnen dient. Nutzer können verschiedene Personen auswählen, deren Stammdaten und zugehörige Attribute einsehen sowie auf einer individuellen Detailseite das jeweils passende EKG‑Diagramm anzeigen lassen.
+Das Projekt erstellt mit Hilfe von Streamlit eine interaktive Webseite, die als digitale Datenbank für Patienten und Administratoren dient. Nutzer können verschiedene Personen auswählen, deren Stammdaten und zugehörige Attribute einsehen sowie auf einer individuellen Detailseite das jeweils passende EKG‑Diagramm anzeigen lassen.
 
 Zur Installation des Projekts wird pip verwendet.
 
@@ -52,7 +52,7 @@ Beinhaltet die Dateien zur Verarbeitung der EKG Daten sowie der Personen.
  persons.json – Stammdaten der Proband*innen
  images/ - Enthält Bilder, die im Frontend angezeigt werden 
 
-## Mögliche Projekterweiterung
+## Bearbeitete freie Aufgaben
 Was man dann auch in die finale Abgabe noch mit einbauen könnte:
 - Vergleich zweier Personen
 - Mehrere EKGs pro Person als Timeline
@@ -60,8 +60,8 @@ Was man dann auch in die finale Abgabe noch mit einbauen könnte:
 
 ##  Headup Webseite:
 
-![Startbild](data/images/Startseite_EKGApp.png)
-![AuswahlPatient](data/images/Auswahl_Patienten.png)
-![Patient](data/images/PatientenSeite.png)
+![Startbild]
+![AuswahlPatient]
+![Patient]
 
 
