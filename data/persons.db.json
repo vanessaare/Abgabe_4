@@ -34,7 +34,8 @@
                 {
                     "id": 102,
                     "date": "2026-04-22",
-                    "result_link": "data/ekg_data/02_Ruhe.txt"
+                    "result_link": "data/ekg_data/02_Ruhe.txt",
+                    "average_hr": 69.02785767113157
                 }
             ],
             "gender": "Male"
