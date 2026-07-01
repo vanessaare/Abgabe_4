@@ -19,6 +19,7 @@ from .components.utlispatient import get_other_patients, get_comparable_metrics
 
 
 class App:
+    '''Hauptklasse der Streamlit-App, die die Navigation und Anzeige von Seiten basierend auf Benutzerinteraktionen verwaltet.'''
 
     def __init__(self):
         '''Initialisiert die App und ihre Manager.'''
@@ -203,13 +204,9 @@ class App:
 
         st.header(person.get_full_name())
 
-        st.markdown(unsafe_allow_html=True)
+        #st.markdown(unsafe_allow_html=True)
 
         tab_info, tab_tests, tab_comparison = st.tabs(["🛈 Allgemeine Informationen", "📊 Auswertungen", "↔ Vergleich"])
-
-        # ---------------------------------------------------------
-        # TAB 1 – Allgemeine Informationen
-        # ---------------------------------------------------------
 
         with tab_info:
             col1, col2, col3 = st.columns([1, 2, 1])

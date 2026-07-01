@@ -3,6 +3,8 @@
 # --- Navigation ---
 
 class Navigation:
+    '''Verwaltet die Navigation innerhalb der Streamlit-App.'''
+
     @staticmethod
     def go_home():
         """Setzt die App-Navigation auf die Startseite zurück und leert die Patientenauswahl."""

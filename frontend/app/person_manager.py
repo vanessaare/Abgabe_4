@@ -6,6 +6,7 @@ from funktionen.filter_persons import filter_persons
 # --- Personen-Verwaltung ---
 
 class PersonManager:
+    '''Verwaltet die Personenliste, Filterung und Löschung von Personen innerhalb der Streamlit-App.'''
 
     def __init__(self):
         '''initialisiert die PersonManager-Klasse und lädt die Personen aus der Datenbank.'''

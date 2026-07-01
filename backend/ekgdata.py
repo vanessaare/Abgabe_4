@@ -7,6 +7,7 @@ import plotly.graph_objects as go
 # --- EKG-Datenmodell ---
 
 class EKGdata:
+    '''Repräsentiert die EKG-Daten und bietet Methoden zur Analyse und Visualisierung.'''
 
     def __init__(self, ekg_dict):
         """Initialisiert das EKGdata-Objekt mit den gegebenen EKG-Daten."""

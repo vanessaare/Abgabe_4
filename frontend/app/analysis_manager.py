@@ -6,6 +6,7 @@ from funktionen.hrv import calculate_hrv_rmssd
 # --- Analyse-Verwaltung ---
 
 class AnalysisManager:
+    '''Verwaltet die Analyse von EKG-Daten und die Interaktion mit der Benutzeroberfläche.'''
 
     def run_analysis(self, person, test_nr, persons=None):
         """Führt die gewählte EKG-Analyse durch, visualisiert Ergebnisse und speichert Berechnungen."""

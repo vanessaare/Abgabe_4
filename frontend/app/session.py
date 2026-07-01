@@ -3,6 +3,7 @@ import streamlit as st
 # --- Session-Verwaltung ---
 
 class SessionManager:
+    '''Verwaltet die Session-Variablen innerhalb der Streamlit-App.'''
 
     @staticmethod
     def init():

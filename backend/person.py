@@ -10,7 +10,8 @@ DB_PATH = "data/persons.db.json"
 
 
 class Person:
-
+    '''Repräsentiert eine Person mit ihren Attributen und Methoden zur Verwaltung von EKG-Tests.'''
+    
     def __init__(self, id, date_of_birth, firstname, lastname, picture_path, ekg_tests, gender="Male"):
         '''Initialisiert das Person-Objekt mit den gegebenen Attributen.'''
 
