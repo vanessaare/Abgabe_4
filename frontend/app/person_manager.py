@@ -18,7 +18,6 @@ class PersonManager:
 
         return filter_persons(self.persons, name)
 
-
     def delete_person(self, person):
         '''Löscht eine Person aus der Personenliste und aktualisiert die Datenbank.'''
 
@@ -30,4 +29,3 @@ class PersonManager:
 
         st.success(f"✅ Person {person.get_full_name()} wurde gelöscht.")
         st.rerun()
-

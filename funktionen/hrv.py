@@ -52,6 +52,7 @@ def calculate_hrv_rmssd(ekg, min_rr=300.0, max_rr=1500.0, max_rr_diff=400.0):
         rr_ms = (np.diff(peaks) / fs) * 1000.0
 
     # --- ARTEFAKT-FILTERUNG (Sichert medizinisch plausible Abstände) ---
+    
     valid_mask = (rr_ms >= min_rr) & (rr_ms <= max_rr)
     rr_ms = rr_ms[valid_mask]
     

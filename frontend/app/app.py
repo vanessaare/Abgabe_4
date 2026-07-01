@@ -31,7 +31,6 @@ class App:
         st.title("Digitale EKG-Datenbank 🫀")
         st.subheader(f"Herzlich Willkommen, {st.session_state.username}!")
 
-
         if st.session_state.role != "patient":
             st.write("Was möchten Sie tun?")
 
@@ -77,10 +76,7 @@ class App:
                 ):
                     st.info("Einstellungen folgen.")
 
-            
-
         else:
-
             st.info(
                 "Hier können Sie Ihre eigenen EKG-Daten und Analysen einsehen. "
                 "Neue Tests oder Änderungen können ausschließlich vom medizinischen Personal vorgenommen werden."
@@ -133,7 +129,6 @@ class App:
         if st.session_state.get("role") != "patient":
             with st.expander("➕ Neue Person hinzufügen"):
                 self.add_person_form()
-
 
     # --- Neue Person hinzufügen ---
 
@@ -557,7 +552,6 @@ class App:
 
         if not login():
             st.stop()
-
         logout()
 
         st.sidebar.write(f"Angemeldet als: {st.session_state.username}")
