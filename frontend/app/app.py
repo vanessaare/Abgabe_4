@@ -286,11 +286,15 @@ class App:
                 if "hrv" in test:
                     st.line_chart(test["hrv"])
 
-                self.analysis_manager.run_analysis(person, idx)
+                self.analysis_manager.run_analysis(person, idx, persons=self.person_manager.persons)
 
         with tab_comparison:
             st.subheader("↔ Vergleich von EKG-Daten")
             st.caption("Patientenvergleich.")
+
+            # Refresh persisted person data so precomputed Auswertewerte angezeigt werden.
+            self.person_manager.persons = Person.load_persons()
+            person = next((p for p in self.person_manager.persons if p.id == person.id), person)
 
             if st.session_state.role in ["admin", "doctor"]:
                 if len(person.ekg_tests) >= 2:

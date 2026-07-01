@@ -1,3 +1,4 @@
+import math
 import numpy as np
 
 import plotly.graph_objects as go
@@ -5,30 +6,43 @@ import plotly.graph_objects as go
 from backend.loader import load_test
 
 
-
 def get_metric_value(person, selected_test, metric):
     if metric == "HR_max":
         return f"{person.calc_max_heart_rate():.0f} bpm"
 
-    test_df = _get_test_dataframe(person, selected_test)
-    if test_df is None:
+    test_dict = _parse_test_selection(person, selected_test)
+    if test_dict is None:
         return "keine Daten"
 
     if metric == "Durchschnittspuls":
+        hr = test_dict.get("average_hr")
+        if hr is not None and not math.isnan(hr):
+            return f"{hr:.2f} bpm"
         try:
-            return f"{load_test(_parse_test_selection(person, selected_test)).estimate_hr():.2f} bpm"
+            hr_value = load_test(test_dict).estimate_hr()
+            if hr_value is None or math.isnan(hr_value):
+                return "nicht berechnet"
+            return f"{hr_value:.2f} bpm"
         except Exception:
-            return "nicht berechenbar"
+            return "nicht berechnet"
 
     if metric == "HRV RMSSD":
+        hrv = test_dict.get("hrv_rmssd")
+        if hrv is not None and not math.isnan(hrv):
+            return f"{hrv:.2f} ms"
         try:
-            ekg = load_test(_parse_test_selection(person, selected_test))
-            hrv = ekg.calculate_hrv_rmssd()
-            return f"{hrv:.2f} ms" if hrv is not None else "nicht berechenbar"
+            ekg = load_test(test_dict)
+            hrv_value = ekg.calculate_hrv_rmssd()
+            if hrv_value is None or (isinstance(hrv_value, float) and math.isnan(hrv_value)):
+                return "nicht berechnet"
+            return f"{hrv_value:.2f} ms"
         except Exception:
-            return "nicht berechenbar"
+            return "nicht berechnet"
 
     if metric == "EKG":
+        test_df = _get_test_dataframe(person, selected_test)
+        if test_df is None:
+            return "keine Daten"
         duration = (test_df.iloc[-1, 1] - test_df.iloc[0, 1]) / 1000.0
         samples = len(test_df)
         return f"{duration:.1f}s / {samples} Samples"

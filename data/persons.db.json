@@ -10,12 +10,16 @@
                 {
                     "id": 101,
                     "date": "2026-05-10",
-                    "result_link": "data/ekg_data/01_Ruhe.txt"
+                    "result_link": "data/ekg_data/01_Ruhe.txt",
+                    "average_hr": 76.15785167570212,
+                    "hrv_rmssd": 97.55466569505953
                 },
                 {
                     "id": 201,
                     "date": "2026-05-15",
-                    "result_link": "data/ekg_data/04_Belastung.txt"
+                    "result_link": "data/ekg_data/04_Belastung.txt",
+                    "average_hr": 113.03487509275291,
+                    "hrv_rmssd": 652.1453070666475
                 }
             ],
             "gender": "Female"

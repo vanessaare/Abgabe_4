@@ -1,11 +1,12 @@
 import streamlit as st 
 from backend.loader import load_test
+from backend.person import Person
 from funktionen.hrv import calculate_hrv_rmssd
 
 class AnalysisManager:
 
 
-    def run_analysis(self, person, test_nr):
+    def run_analysis(self, person, test_nr, persons=None):
 
         ekg_dict = person.ekg_tests[test_nr]
         ekg      = load_test(ekg_dict)
@@ -18,7 +19,15 @@ class AnalysisManager:
 
         if option == "Durchschnittspuls":
             try:
-                st.write(f"Durchschnittlicher Puls: **{ekg.estimate_hr():.2f} bpm**")
+                avg_hr = ekg.estimate_hr()
+                ekg_dict["average_hr"] = float(avg_hr)
+                if persons is not None:
+                    for p in persons:
+                        if p.id == person.id:
+                            p.ekg_tests = person.ekg_tests
+                            break
+                    Person.save_persons(persons)
+                st.write(f"Durchschnittlicher Puls: **{avg_hr:.2f} bpm**")
             except Exception as e:
                 st.error(f"Fehler: {e}")
 
@@ -43,6 +52,13 @@ class AnalysisManager:
             try:
                 rmssd = calculate_hrv_rmssd(ekg)
                 if rmssd is not None:
+                    ekg_dict["hrv_rmssd"] = float(rmssd)
+                    if persons is not None:
+                        for p in persons:
+                            if p.id == person.id:
+                                p.ekg_tests = person.ekg_tests
+                                break
+                        Person.save_persons(persons)
                     st.write(f"HRV (RMSSD): **{rmssd:.2f} ms**")
                 else:
                     st.warning("Nicht genügend Peaks für HRV-Berechnung.")
