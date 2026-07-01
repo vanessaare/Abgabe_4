@@ -1,10 +1,12 @@
 import streamlit as st
 
+# --- Session-Verwaltung ---
 
 class SessionManager:
 
     @staticmethod
     def init():
+        '''Initialisiert die Session-Variablen, falls sie noch nicht gesetzt sind.'''
 
         defaults = {
             "page": "home",

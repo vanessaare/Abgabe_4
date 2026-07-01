@@ -3,10 +3,12 @@ from backend.loader import load_test
 from backend.person import Person
 from funktionen.hrv import calculate_hrv_rmssd
 
+# --- Analyse-Verwaltung ---
+
 class AnalysisManager:
 
-
     def run_analysis(self, person, test_nr, persons=None):
+        """Führt die gewählte EKG-Analyse durch, visualisiert Ergebnisse und speichert Berechnungen."""
 
         ekg_dict = person.ekg_tests[test_nr]
         ekg      = load_test(ekg_dict)

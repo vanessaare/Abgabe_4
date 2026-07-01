@@ -4,21 +4,13 @@ import numpy as np
 from funktionen.peak_detection import peak_detection
 import plotly.graph_objects as go
 
+# --- EKG-Datenmodell ---
 
 class EKGdata:
-    """
-    Klasse zur Verwaltung, Analyse und Visualisierung von EKG‑Messdaten.
-    Lädt die Rohdaten, speichert sie als DataFrame und bietet Funktionen
-    zur Peak‑Erkennung, Herzfrequenzschätzung und Plot‑Darstellung.
-    """
 
     def __init__(self, ekg_dict):
-        """
-     Initialisiert das Objekt mit einem EKG‑Datensatz.
-     Lädt die Daten aus der angegebenen Datei und speichert sie als DataFrame.
-     """
+        """Initialisiert das EKGdata-Objekt mit den gegebenen EKG-Daten."""
         
-        #pass
         self.id = ekg_dict["id"]
         self.date = ekg_dict["date"]
         self.data = ekg_dict["result_link"]
@@ -27,44 +19,37 @@ class EKGdata:
 
     @staticmethod
     def load_by_id(test_id: int, person_database: list):
-        """
-    Input: Test‑ID und Personendatenbank.
-    Output: EKGdata‑Objekt oder None.
-    """
+        '''Lädt die EKG-Daten basierend auf der Test-ID und der Personen-Datenbank.'''
+
         for person in person_database:
             for test in person.get("ekg_tests", []):
                 if test["id"] == test_id:
                     return EKGdata(test) 
         return None
+    
+    def get_duration_minutes(self) -> float:
+        '''Gibt die Dauer des EKG-Signals in Minuten zurück.'''
 
-    def plot_time_series(self):
-        """
-    Input: keine (eingelesener DataFrame).
-    Output: Liniendiagramm des EKG‑Signals.
-    """
-        plot_df = self.df.head(2000)
-        self.fig = px.line(
-            plot_df,
-            x="Zeit in ms",
-            y="Messwerte in mV",
-            title=f"EKG Signal {self.id}"
-        )
-        if not plot_df.empty:
-            self.fig.update_xaxes(
-                range=[plot_df["Zeit in ms"].iloc[0], plot_df["Zeit in ms"].iloc[-1]]
-            )
-        return self.fig
+        time_ms = self.df["Zeit in ms"]
+        duration_ms = time_ms.iloc[-1] - time_ms.iloc[0]
+        return round(duration_ms / 1000 / 60, 2)
+
+
+# --- Signalverarbeitung & Analyse ---
 
     def find_peaks(self, threshold=350, respacing_factor=5):
-        """ Input: Schwellenwert und Resampling‑Faktor.
-        Output: Liste der Peak‑Indizes."""
+        '''Findet Peaks im EKG-Signal basierend auf den gegebenen Parametern.'''
+
         self.peaks = peak_detection(
             self.df["Messwerte in mV"],
             threshold,
             respacing_factor
         )
         return self.peaks
+    
     def calculate_hrv_rmssd(self):
+        '''Berechnet den HRV RMSSD-Wert basierend auf den gefundenen Peaks.'''
+
         peaks = self.find_peaks()
         if len(peaks) < 3:
             return None
@@ -74,6 +59,8 @@ class EKGdata:
         return rmssd
     
     def estimate_hr(self) -> float:
+        '''Schätzt die Herzfrequenz (BPM) basierend auf den gefundenen Peaks im EKG-Signal.'''
+        
         # Peaks sicherstellen
         if not hasattr(self, "peaks"):
             self.find_peaks()
@@ -95,10 +82,28 @@ class EKGdata:
         bpm = 60000.0 / avg_rr
         return float(bpm)
 
+
+# --- Visualisierung ---
+
+    def plot_time_series(self):
+        '''Erstellt ein Liniendiagramm des EKG-Signals basierend auf den Zeit- und Spannungswerten.'''
+
+        plot_df = self.df.head(2000)
+        self.fig = px.line(
+            plot_df,
+            x="Zeit in ms",
+            y="Messwerte in mV",
+            title=f"EKG Signal {self.id}"
+        )
+        if not plot_df.empty:
+            self.fig.update_xaxes(
+                range=[plot_df["Zeit in ms"].iloc[0], plot_df["Zeit in ms"].iloc[-1]]
+            )
+        return self.fig
+
     def plot_with_peaks(self):
-        """Input: keine.
-        Output: Plot des EKG‑Signals mit markierten Peaks.
-        """
+        '''Erstellt ein Liniendiagramm des EKG-Signals mit markierten Peaks.'''
+
         if not hasattr(self, "peaks"):
             self.find_peaks()
 
@@ -131,6 +136,8 @@ class EKGdata:
         return fig
     
     def plot_with_peaks_window(self, start_min=0, end_min=None):
+        '''Erstellt ein Liniendiagramm des EKG-Signals mit markierten Peaks innerhalb eines bestimmten Zeitfensters.'''
+
         if not hasattr(self, "peaks"):
             self.find_peaks()
 
@@ -178,8 +185,3 @@ class EKGdata:
             height=500,
         )
         return fig
-    
-    def get_duration_minutes(self) -> float:
-        time_ms = self.df["Zeit in ms"]
-        duration_ms = time_ms.iloc[-1] - time_ms.iloc[0]
-        return round(duration_ms / 1000 / 60, 2)

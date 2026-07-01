@@ -1,12 +1,13 @@
 import math
 import numpy as np
-
 import plotly.graph_objects as go
-
 from backend.loader import load_test
 
+# --- Metriken & Datenextraktion ---
 
 def get_metric_value(person, selected_test, metric):
+    '''Gibt den Wert der angegebenen Metrik für die angegebene Person und den ausgewählten Test zurück.'''
+
     if metric == "HR_max":
         return f"{person.calc_max_heart_rate():.0f} bpm"
 
@@ -50,7 +51,11 @@ def get_metric_value(person, selected_test, metric):
     return "unbekannt"
 
 
+# --- Interne Signal- und Datenhelfer ---
+
 def _parse_test_selection(patient, selected_test):
+    '''Analysiert die ausgewählte Testauswahl und gibt das entsprechende Test-Dictionary zurück.'''
+
     if not selected_test or selected_test == "Keine Tests verfügbar":
         return None
 
@@ -66,6 +71,8 @@ def _parse_test_selection(patient, selected_test):
 
 
 def _format_time_ticks(time):
+    '''Formatiert die Zeit-Ticks für die x-Achse des EKG-Diagramms.'''
+
     if len(time) == 0:
         return [], []
 
@@ -87,6 +94,8 @@ def _format_time_ticks(time):
 
 
 def _prepare_signal(df):
+    '''Bereitet die EKG-Signaldaten für die Darstellung vor, indem sie normalisiert und aufbereitet werden.'''
+
     time = df.iloc[:, 1].astype(float).to_numpy()
     voltage = df.iloc[:, 0].astype(float).to_numpy()
 
@@ -102,6 +111,8 @@ def _prepare_signal(df):
 
 
 def _get_test_dataframe(patient, selected_test=None):
+    '''Lädt die EKG-Daten für den angegebenen Patienten und den ausgewählten Test.'''
+
     if hasattr(patient, "ekg_data") and getattr(patient.ekg_data, "df", None) is not None:
         return patient.ekg_data.df
 
@@ -116,6 +127,8 @@ def _get_test_dataframe(patient, selected_test=None):
 
 
 def _window_dataframe(df, start_sec=0, window_sec=None):
+    '''Schneidet das DataFrame basierend auf dem angegebenen Startzeitpunkt und der Fenstergröße zu.'''
+
     if window_sec is None or df is None or df.shape[0] == 0:
         return df
 
@@ -127,6 +140,8 @@ def _window_dataframe(df, start_sec=0, window_sec=None):
 
 
 def get_test_duration_seconds(patient, selected_test=None):
+    '''Berechnet die Dauer des EKG-Tests in Sekunden für den angegebenen Patienten und den ausgewählten Test.'''
+
     df = _get_test_dataframe(patient, selected_test)
     if df is None or df.shape[0] == 0:
         return 0
@@ -135,6 +150,8 @@ def get_test_duration_seconds(patient, selected_test=None):
 
 
 def get_window_seconds(patient, selected_test=None):
+    '''Bestimmt die Fenstergröße in Sekunden für die Darstellung des EKG-Signals basierend auf dem ausgewählten Test.'''
+
     test_dict = _parse_test_selection(patient, selected_test)
     if test_dict is None:
         return 4
@@ -144,6 +161,8 @@ def get_window_seconds(patient, selected_test=None):
 
 
 def _window_signal(time, voltage, start_sec=0, window_sec=None):
+    '''Schneidet das EKG-Signal basierend auf dem angegebenen Startzeitpunkt und der Fenstergröße zu.'''
+
     if window_sec is None:
         return time, voltage
     end_sec = start_sec + window_sec
@@ -153,7 +172,11 @@ def _window_signal(time, voltage, start_sec=0, window_sec=None):
     return time[mask] - start_sec, voltage[mask]
 
 
+# --- Visualisierung ---
+
 def plot_ekg_overlay(patient_a, patient_b, selected_test_a=None, selected_test_b=None, start_sec=0, window_sec=None, label_a=None, label_b=None, title=None):
+    '''Erstellt ein Overlay-Diagramm der EKG-Signale von zwei Patienten basierend auf den ausgewählten Tests.'''
+
     df_a = _get_test_dataframe(patient_a, selected_test_a)
     df_b = _get_test_dataframe(patient_b, selected_test_b)
 
@@ -212,6 +235,3 @@ def plot_ekg_overlay(patient_a, patient_b, selected_test_a=None, selected_test_b
     )
 
     return fig, None
-
-
-

@@ -89,8 +89,6 @@ class FITdata:
             "Messwerte in mV": ecg,
         })
 
-    # ------------------------------------------------------------------
-
     def estimate_hr(self) -> float:
         hr = self._hr_df["heart_rate"]
 

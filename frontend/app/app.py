@@ -21,10 +21,12 @@ from .components.utlispatient import get_other_patients, get_comparable_metrics
 class App:
 
     def __init__(self):
+        '''Initialisiert die App und ihre Manager.'''
         self.person_manager = PersonManager()
         self.analysis_manager = AnalysisManager()
 
     def home(self):
+        '''Rendert die Startseite der App mit Optionen basierend auf der Rolle des Benutzers.'''
         st.title("Digitale EKG-Datenbank 🫀")
         st.subheader(f"Herzlich Willkommen, {st.session_state.username}!")
 
@@ -89,26 +91,25 @@ class App:
                 use_container_width=True,
                 type="primary"
             ):
-                # Der eingeloggte Patient sollte bereits im Login
-                # als selected_person gespeichert werden.
+                # Der eingeloggte Patient sollte bereits im Loginals selected_person gespeichert werden.
                 st.session_state.page = "analysis"
                 st.rerun()
 
     # --- Person auswählen ---
 
     def select_person(self):
+        '''Rendert die Seite zur Patientenauswahl mit Filteroptionen und ermöglicht das Hinzufügen neuer Patienten.'''
+
         st.subheader("🔍 Filter")
 
         st.button("⬅ Zurück", key="select_back", on_click=Navigation.go_home)
 
         name_filter = st.text_input("Name suchen")
-
-        filtered = self.person_manager.get_filtered(
-            name_filter
-        )
+        filtered = self.person_manager.get_filtered(name_filter)
 
         if not filtered:
             st.warning("Keine passenden Patienten gefunden.")
+        
         else:
             st.header("Patient:in auswählen")
 
@@ -136,6 +137,8 @@ class App:
     # --- Neue Person hinzufügen ---
 
     def add_person_form(self):
+        '''Rendert das Formular zum Hinzufügen einer neuen Person mit Eingabefeldern für Name, Geburtsjahr, Geschlecht und optionales Bild.'''
+
         st.subheader("➕ Neue Person hinzufügen")
         st.button("⬅ Zurück", key="add_person_back", on_click=Navigation.go_home)
         with st.form("add_person"):
@@ -196,34 +199,18 @@ class App:
     # --- Person anzeigen ---
 
     def show_person(self, person):
+        '''Rendert die Detailansicht einer ausgewählten Person mit Tabs für allgemeine Informationen, EKG-Analysen und Vergleichsmöglichkeiten.'''
+
         st.header(person.get_full_name())
 
-        # Tab-Styling: Tab-Buttons breiter über die ganze Leiste verteilen
-        st.markdown(
-            """
-            <style>
-                div[role='tablist'] {
-                    display: flex;
-                    justify-content: space-between;
-                }
-                div[role='tablist'] button[role='tab'] {
-                    flex: 1 1 auto;
-                    min-width: 0;
-                }
-                div[role='tablist'] button[role='tab'] span {
-                    white-space: normal;
-                }
-            </style>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.markdown(unsafe_allow_html=True)
 
-        # Tabs für Übersichtlichkeit
         tab_info, tab_tests, tab_comparison = st.tabs(["🛈 Allgemeine Informationen", "📊 Auswertungen", "↔ Vergleich"])
 
         # ---------------------------------------------------------
         # TAB 1 – Allgemeine Informationen
         # ---------------------------------------------------------
+
         with tab_info:
             col1, col2, col3 = st.columns([1, 2, 1])
 
@@ -473,16 +460,21 @@ class App:
                             st.error(f"Der Vergleich konnte nicht erstellt werden: {exc}")
 
     def _go_home(self):
+        '''Setzt die App-Navigation auf die Startseite zurück.'''
+
         st.session_state.page = "home"
 
     def _show_add_person_form(self):
+        '''Setzt die App-Navigation auf das Formular zum Hinzufügen einer neuen Person zurück.'''
+
         st.session_state.page = "add_person_form"
 
     # --- Person editieren ---
 
     def edit_person_form(self, person):
-        st.subheader("✏️ Person editieren")
+        '''Rendert das Formular zum Editieren der Informationen einer Person mit Eingabefeldern für Name, Geburtsjahr, Geschlecht und optionales Bild.'''
 
+        st.subheader("✏️ Person editieren")
         with st.form("edit_person"):
             col1, col2 = st.columns(2)
             firstname = col1.text_input("Vorname", value=person.firstname)
@@ -520,9 +512,12 @@ class App:
             st.session_state.edit_mode = False
             st.rerun()
 
+
     # --- Neuen Test hinzufügen ---
 
     def add_test_form(self, person):
+        '''Rendert das Formular zum Hinzufügen eines neuen EKG-Tests für eine Person mit Eingabefeldern für Datum und Datei-Upload.'''
+        
         st.subheader("➕ Neuen Test hinzufügen")
 
         with st.form("add_test"):
@@ -555,6 +550,7 @@ class App:
             st.success(f"✅ Test {new_id} gespeichert ({ext.upper()}).")
             st.rerun()
 
+
     # --- Router ---
 
     def main(self):
@@ -585,6 +581,7 @@ class App:
 
             self.show_person(person)
 
-
 def main():
+    '''Startet die App.'''
+    
     App().main()
