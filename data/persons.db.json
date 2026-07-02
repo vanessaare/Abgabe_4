@@ -5,17 +5,21 @@
             "date_of_birth": 2001,
             "firstname": "Anne",
             "lastname": "Mayer",
-            "picture_path": "data/images/Person1_female.jpg",
+            "picture_path": "data/images/Person1_female.png",
             "ekg_tests": [
                 {
                     "id": 101,
                     "date": "2026-05-10",
-                    "result_link": "data/ekg_data/01_Ruhe.txt"
+                    "result_link": "data/ekg_data/01_Ruhe.txt",
+                    "average_hr": 76.15785167570212,
+                    "hrv_rmssd": 97.55466569505953
                 },
                 {
                     "id": 201,
                     "date": "2026-05-15",
-                    "result_link": "data/ekg_data/04_Belastung.txt"
+                    "result_link": "data/ekg_data/04_Belastung.txt",
+                    "average_hr": 113.03487509275291,
+                    "hrv_rmssd": 652.1453070666475
                 }
             ],
             "gender": "Female"
@@ -25,12 +29,13 @@
             "date_of_birth": 1998,
             "firstname": "Luka",
             "lastname": "Huber",
-            "picture_path": "data/images/Person1_male.webp",
+            "picture_path": "data/images/Person1_male.png",
             "ekg_tests": [
                 {
                     "id": 102,
                     "date": "2026-04-22",
-                    "result_link": "data/ekg_data/02_Ruhe.txt"
+                    "result_link": "data/ekg_data/02_Ruhe.txt",
+                    "average_hr": 69.02785767113157
                 }
             ],
             "gender": "Male"
@@ -40,7 +45,7 @@
             "date_of_birth": 2003,
             "firstname": "Sophie",
             "lastname": "Gruber",
-            "picture_path": "data/images/Person2_female.webp",
+            "picture_path": "data/images/Person2_female.png",
             "ekg_tests": [
                 {
                     "id": 103,
@@ -55,7 +60,7 @@
             "date_of_birth": 1995,
             "firstname": "David",
             "lastname": "Schneider",
-            "picture_path": "data/images/Person2_male.webp",
+            "picture_path": "data/images/Person2_male.png",
             "ekg_tests": [
                 {
                     "id": 104,
@@ -70,7 +75,7 @@
             "date_of_birth": 2000,
             "firstname": "Laura",
             "lastname": "Berger",
-            "picture_path": "data/images/Person3_female.webp",
+            "picture_path": "data/images/Person3_female.png",
             "ekg_tests": [
                 {
                     "id": 105,
@@ -85,7 +90,7 @@
             "date_of_birth": 1997,
             "firstname": "Michael",
             "lastname": "Wagner",
-            "picture_path": "data/images/Person3_male.webp",
+            "picture_path": "data/images/Person3_male.png",
             "ekg_tests": [
                 {
                     "id": 106,
@@ -100,6 +105,7 @@
             "date_of_birth": 2002,
             "firstname": "Violet",
             "lastname": "Sorrengail",
+<<<<<<< HEAD
             "picture_path": "data/images/Person14_female.webp",
             "ekg_tests": [
                 {
@@ -108,6 +114,10 @@
                     "result_link": "data/ekg_data/14_207.txt"
                 }
             ],
+=======
+            "picture_path": "data/images/Person4_female.png",
+            "ekg_tests": [],
+>>>>>>> bd853b573ea741d4f5d8895ada3d9def57fab682
             "gender": "Female"
         },
         "8": {
@@ -115,7 +125,7 @@
             "date_of_birth": 1987,
             "firstname": "Roy",
             "lastname": "Bianco",
-            "picture_path": "data/images/Person16_male.webp",
+            "picture_path": "data/images/Person4_male.png",
             "ekg_tests": [
                 {
                     "id": 205,
@@ -130,7 +140,7 @@
             "date_of_birth": 1995,
             "firstname": "Michaela",
             "lastname": "Shiffrin",
-            "picture_path": "data/images/Person17_female.webp",
+            "picture_path": "data/images/Person5_female.png",
             "ekg_tests": [
                 {
                     "id": 206,

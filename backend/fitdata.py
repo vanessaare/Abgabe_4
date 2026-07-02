@@ -1,11 +1,3 @@
-"""
-Liest .fit-Dateien ein und erzeugt daraus ein synthetisches EKG-Signal.
-BPM-Werte werden via RR-Intervalle in eine PQRST-Kurve bei 250 Hz umgewandelt,
-sodass dieselbe Schnittstelle wie EKGdata nutzbar ist.
-
-Abhängigkeiten: pip install fitparse scipy
-"""
-
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -20,21 +12,34 @@ except ImportError:
 FS = 250  # synthetische Abtastrate in Hz
 
 
+# --- FIT-Datenmodell ---
+
 class FITdata:
-    """Synthetisches EKG aus .fit-Datei. Gleiche Schnittstelle wie EKGdata."""
+    '''Repräsentiert ein synthetisches EKG aus .fit-Datei. 
+    BPM-Werte werden via RR-Intervalle in eine PQRST-Kurve bei 250 Hz umgewandelt,
+    sodass dieselbe Schnittstelle wie EKGdata nutzbar ist.'''
 
     def __init__(self, fit_dict: dict):
+        '''Initialisiert das FIT-Objekt und generiert ein synthetisches EKG aus den BPM-Werten.'''
+
         self.id = fit_dict["id"]
         self.date = fit_dict["date"]
         self._hr_df = self._load_fit(fit_dict["result_link"])
         self.df = self._build_ecg_df(self._hr_df)
         self.peaks = []
 
-    # ------------------------------------------------------------------
+    def get_duration_minutes(self) -> float:
+            '''Gibt die Dauer der Messung in Minuten zurück.'''
+
+            ms = self.df["Zeit in ms"]
+            return round((ms.iloc[-1] - ms.iloc[0]) / 60000, 2)
+
+# --- Interne Generatoren & Parser ---
 
     @staticmethod
     def _load_fit(path: str) -> pd.DataFrame:
-        """Liest BPM + Timestamps aus der .fit-Datei."""
+        '''Liest BPM + Timestamps aus der .fit-Datei.'''
+
         rows = []
         for record in FitFile(path).get_messages("record"):
             data = {f.name: f.value for f in record}
@@ -52,7 +57,8 @@ class FITdata:
 
     @staticmethod
     def _pqrst_template() -> np.ndarray:
-        """Ein synthetischer PQRST-Herzschlag (1 Sekunde bei FS Hz)."""
+        '''Ein synthetischer PQRST-Herzschlag (1 Sekunde bei FS Hz).'''
+
         t = np.linspace(0, 1, FS, endpoint=False)
         ecg = np.zeros(FS)
         ecg += 0.15 * np.exp(-((t - 0.15) ** 2) / (2 * 0.012 ** 2))   # P
@@ -64,7 +70,8 @@ class FITdata:
 
     @staticmethod
     def _build_ecg_df(hr_df: pd.DataFrame) -> pd.DataFrame:
-        """Erzeugt synthetisches EKG-Signal aus BPM-Zeitreihe."""
+        '''Erzeugt synthetisches EKG-Signal aus BPM-Zeitreihe.'''
+
         bpm = hr_df["heart_rate"].values.astype(float)
         ts  = hr_df["timestamp_ms"].values.astype(float)
 
@@ -89,13 +96,25 @@ class FITdata:
             "Messwerte in mV": ecg,
         })
 
-    # ------------------------------------------------------------------
+
+# --- Signalverarbeitung & Analyse ---
 
     def estimate_hr(self) -> float:
-        return float(self._hr_df["heart_rate"].mean())
+        '''Schätzt die Herzfrequenz aus der BPM-Zeitreihe.'''
+
+        hr = self._hr_df["heart_rate"]
+
+        # Realistische Werte filtern
+        hr_filtered = hr[(hr > 35) & (hr < 210)]
+
+        if len(hr_filtered) == 0:
+            return float("nan")   # oder 0, je nach App-Logik
+
+        return float(hr_filtered.mean())
 
     def find_peaks(self, threshold=350, respacing_factor=5):
-        """Peaks im synthetischen EKG (R-Zacken)."""
+        '''Peaks im synthetischen EKG (R-Zacken).'''
+
         values   = self.df["Messwerte in mV"].values
         distance = max(1, int(FS * 0.4))  # mind. 0.4 s zwischen Peaks
         indices, _ = sp_find_peaks(values, height=0.5, distance=distance)
@@ -103,6 +122,8 @@ class FITdata:
         return self.peaks
 
     def calculate_hrv_rmssd(self):
+        '''Berechnet die Herzfrequenzvariabilität (HRV) als RMSSD aus den R-Zacken.'''
+
         if not self.peaks:
             self.find_peaks()
         if len(self.peaks) < 3:
@@ -111,17 +132,19 @@ class FITdata:
         rr   = np.diff(peak_times)
         return float(np.sqrt(np.mean(np.diff(rr) ** 2)))
 
-    def get_duration_minutes(self) -> float:
-        ms = self.df["Zeit in ms"]
-        return round((ms.iloc[-1] - ms.iloc[0]) / 60000, 2)
 
-    # ------------------------------------------------------------------
+    # ---Visualisierung ---
 
     def plot_time_series(self):
+        '''Erzeugt ein Liniendiagramm des synthetischen EKG-Signals.'''
+
         return px.line(self.df, x="Zeit in ms", y="Messwerte in mV",
                        title=f"FIT-Aktivität {self.id} – synthetisches EKG")
 
+
     def plot_with_peaks(self):
+        '''Erzeugt ein Liniendiagramm des synthetischen EKG-Signals mit markierten Peaks.'''
+
         if not self.peaks:
             self.find_peaks()
         plot_df = self.df.head(2000)
@@ -140,6 +163,8 @@ class FITdata:
         return fig
 
     def plot_with_peaks_window(self, start_min=0, end_min=None):
+        '''Erzeugt ein Liniendiagramm des synthetischen EKG-Signals mit markierten Peaks in einem Zeitfenster.'''
+
         if not self.peaks:
             self.find_peaks()
         time_ms_rel = self.df["Zeit in ms"] - self.df["Zeit in ms"].iloc[0]

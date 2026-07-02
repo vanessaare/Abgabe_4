@@ -9,9 +9,10 @@ from funktionen.filter_persons import filter_persons
 
 persons = Person.load_persons()
 
-# --- Session State Initialization ---
+# --- Session State Initialisierung ---
 
 def init_session():
+    '''Initialisiert die Standardwerte im Streamlit Session State, falls sie noch nicht existieren.'''
 
     if "page" not in st.session_state:
         st.session_state.page = "home"
@@ -29,14 +30,17 @@ def init_session():
         st.session_state.role = None
 
 
-
-# --- Navigation helpers ---
+# --- Navigation ---
 
 def go_home():
+    '''App-Navigation zurück zur Startseite und setzt die Patientenauswahl zurück.'''
+
     st.session_state.page = "home"
     st.session_state.selected_person = None
 
 def set_person(person):
+    '''Wechselt zur Analyse-Seite der ausgewählten Person.'''
+
     st.session_state.selected_person = person
     st.session_state.page = "analysis"
 
@@ -44,8 +48,9 @@ def set_person(person):
 # --- Person löschen ---
 
 def delete_person(person):
-    global persons
+    '''Löscht die ausgewählte Person.'''
 
+    global persons
     persons = [p for p in persons if p.id != person.id]
     Person.save_persons(persons)
 
@@ -59,6 +64,7 @@ def delete_person(person):
 # --- Home Page ---
 
 def home():
+    '''Rendert die Benutzeroberfläche der Startseite mit Willkommenstext und Hauptmenü.'''
 
     st.title("Willkommen in Ihrer digitalen EKG-Datenbank 🫀")
 
@@ -72,15 +78,12 @@ def home():
         "Bitte wenden Sie sich an das medizinische Personal, um neue Tests hinzuzufügen oder Ihre Daten zu bearbeiten.")
 
 
-
 # --- Person auswählen ---
 
 def select_person():
-
+    '''Rendert die Filtermaske und Auswahlliste für Patientendaten inklusive Löschoption.'''
     st.subheader("🔍 Filter")
-
     name_filter = st.text_input("Name suchen")
-
     col1, col2 = st.columns(2)
 
     with col1:
@@ -90,7 +93,6 @@ def select_person():
         age_min = st.number_input("Min Alter", 0, 120, 0)
         age_max = st.number_input("Max Alter", 0, 120, 120)
         
-
     filtered = filter_persons(
         persons,
         name_filter,
@@ -101,14 +103,12 @@ def select_person():
 
     if not filtered:
         st.warning("Keine passenden Patienten gefunden.")
+    
     else:
         st.header("Patient:in auswählen")
-
         names = [p.get_full_name() for p in filtered]
         selected_name = st.selectbox("Bitte Patient:in auswählen:", names)
-
         selected_person = next(p for p in filtered if p.get_full_name() == selected_name)
-
         col1, col2 = st.columns(2)
 
         with col1:
@@ -128,10 +128,10 @@ def select_person():
             add_person_form()
 
 
-
 # --- Neue Person hinzufügen ---
 
 def add_person_form():
+    '''Rendert das Formular zur Eingabe einer neuen Person, inklusive Validierung und Speicherung der Daten.'''
 
     st.subheader("➕ Neue Person hinzufügen")
 
@@ -157,8 +157,6 @@ def add_person_form():
             return
 
         new_id = Person.next_person_id(persons)
-
-        # Bild speichern
         pic_path = "data/images/default.webp"
 
         if picture:
@@ -170,21 +168,18 @@ def add_person_form():
                 f.write(picture.read())
 
         new_person = Person(new_id, int(dob), firstname, lastname, pic_path, [], gender)
-
         persons.append(new_person)
         Person.save_persons(persons)
-
         username, password = create_patient_account(new_person)
 
         st.success(f"✅ {new_person.get_full_name()} wurde gespeichert.\nLogin: {username}\nPasswort: {password}")
-
         st.rerun()
-
 
 
 # --- Person anzeigen ---
 
 def show_person(person):
+    '''Rendert die Detailansicht einer ausgewählten Person, inklusive Bild, Basisinformationen und EKG-Testübersicht.'''
 
     st.header("Patient:in anzeigen")
 
@@ -207,9 +202,7 @@ def show_person(person):
         else:
             st.warning("⚠️ Keine EKG-Daten")
 
-    
     st.button("⬅ Zurück", on_click=go_home)
-
 
     if st.session_state.get("role") != "patient":
 
@@ -225,10 +218,10 @@ def show_person(person):
         st.info("Sie haben keine Berechtigung, Daten zu bearbeiten oder neue Tests hinzuzufügen.")
 
 
-
 # --- Test auswählen ---
 
 def select_test_nr(person):
+    '''Rendert eine Dropdown-Liste zur Auswahl eines EKG-Tests der ausgewählten Person.'''
 
     labels = [f"Test {i+1}" for i in range(len(person.ekg_tests))]
 
@@ -244,13 +237,13 @@ def select_test_nr(person):
             del person.ekg_tests[idx]
             st.success(f"{selected} wurde gelöscht.")
             st.experimental_rerun()
-
     return idx
 
 
 # --- Analyse durchführen ---
 
 def run_analysis(person, test_nr):
+    '''Führt die Analyse des ausgewählten EKG-Tests durch und rendert die Ergebnisse.'''
 
     ekg_dict = person.ekg_tests[test_nr]
     ekg      = load_test(ekg_dict)
@@ -294,6 +287,8 @@ def run_analysis(person, test_nr):
 # --- Person editieren ---
 
 def edit_person_form(person):
+    '''Rendert das Formular zur Bearbeitung der Basisinformationen einer Person, inklusive Validierung und Speicherung der Änderungen.'''
+
     st.subheader("✏️ Person editieren")
     with st.form("edit_person"):
         col1, col2 = st.columns(2)
@@ -330,6 +325,8 @@ def edit_person_form(person):
 # --- Neuen Test hinzufügen ---
 
 def add_test_form(person):
+    '''Rendert das Formular zum Hochladen eines neuen EKG-Tests für die ausgewählte Person, inklusive Validierung und Speicherung der Datei.'''
+
     st.subheader("➕ Neuen Test hinzufügen")
     with st.form("add_test"):
         date     = st.date_input("Testdatum", value=datetime.date.today())
@@ -360,27 +357,20 @@ def add_test_form(person):
         st.rerun()
 
 
-
-
-
 # --- Router ---
 
 def main():
     """Steuert die Navigation zwischen den verschiedenen Seiten der Anwendung basierend auf dem aktuellen Status in der Session."""
 
     init_session()
-
     if not login():
         st.stop()
-
     logout()
-
 
     st.sidebar.write(
         f"Angemeldet als: {st.session_state.username}")
-
+    
     page = st.session_state.page
-
     if page == "home":
         home()
 
@@ -388,17 +378,13 @@ def main():
         select_person()
 
     elif page == "analysis":
-
         person = st.session_state.selected_person
-
         if person is None:
             st.session_state.page = "select"
             st.rerun()
-
         show_person(person)
 
         if person.has_ekg_data() and not st.session_state.get("edit_mode") and not st.session_state.get("add_test_mode"):
-
             st.subheader("Analyse durchführen")
             test_nr = select_test_nr(person)
             run_analysis(person, test_nr)

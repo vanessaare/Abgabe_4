@@ -1,3 +1,4 @@
-from frontend.app import main
+from frontend.app.app import main
 
-main()
+if __name__ == "__main__":
+    main()

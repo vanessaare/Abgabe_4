@@ -3,10 +3,8 @@
 import numpy as np
 
 def calculate_hrv_rmssd(ekg, min_rr=300.0, max_rr=1500.0, max_rr_diff=400.0):
-    """
-    Berechnet den RMSSD (ms) aus einem EKGdata-Objekt.
-    Erkennt und korrigiert Einheitenfehler (Sekunden vs. Millisekunden vs. Samples) automatisch.
-    """
+    '''Berechnet den HRV RMSSD-Wert aus den gegebenen EKG-Daten.'''
+
     # 1. R-Peaks extrahieren
     peaks = None
     if hasattr(ekg, "peaks")and len(ekg.peaks) > 0:
@@ -54,6 +52,7 @@ def calculate_hrv_rmssd(ekg, min_rr=300.0, max_rr=1500.0, max_rr_diff=400.0):
         rr_ms = (np.diff(peaks) / fs) * 1000.0
 
     # --- ARTEFAKT-FILTERUNG (Sichert medizinisch plausible Abstände) ---
+    
     valid_mask = (rr_ms >= min_rr) & (rr_ms <= max_rr)
     rr_ms = rr_ms[valid_mask]
     
@@ -66,7 +65,6 @@ def calculate_hrv_rmssd(ekg, min_rr=300.0, max_rr=1500.0, max_rr_diff=400.0):
 
     if rr_ms.size < 2:
         return None
-    # -----------------------------------------------------------------
 
     # 3. Mathematisch korrekte RMSSD Berechnung
     rr_diff = np.diff(rr_ms) 
