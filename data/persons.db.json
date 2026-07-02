@@ -101,7 +101,13 @@
             "firstname": "Violet",
             "lastname": "Sorrengail",
             "picture_path": "data/images/Person14_female.webp",
-            "ekg_tests": [],
+            "ekg_tests": [
+                {
+                    "id": 207,
+                    "date": "2026-06-26",
+                    "result_link": "data/ekg_data/14_207.txt"
+                }
+            ],
             "gender": "Female"
         },
         "8": {
