@@ -105,7 +105,6 @@
             "date_of_birth": 2002,
             "firstname": "Violet",
             "lastname": "Sorrengail",
-<<<<<<< HEAD
             "picture_path": "data/images/Person14_female.webp",
             "ekg_tests": [
                 {
@@ -114,10 +113,6 @@
                     "result_link": "data/ekg_data/14_207.txt"
                 }
             ],
-=======
-            "picture_path": "data/images/Person4_female.png",
-            "ekg_tests": [],
->>>>>>> bd853b573ea741d4f5d8895ada3d9def57fab682
             "gender": "Female"
         },
         "8": {
