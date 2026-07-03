@@ -6,6 +6,7 @@ from backend.loader import load_test
 from backend.funktionen.hrv import calculate_hrv_rmssd
 from frontend.login import login, logout, create_patient_account
 from backend.funktionen.filter_persons import filter_persons
+from backend.funktionen.notizen import hole_notizen, notiz_hinzufuegen
 
 persons = Person.load_persons()
 
@@ -236,7 +237,7 @@ def select_test_nr(person):
         if st.button("🗑️ Löschen"):
             del person.ekg_tests[idx]
             st.success(f"{selected} wurde gelöscht.")
-            st.experimental_rerun()
+            st.rerun()
     return idx
 
 
@@ -357,6 +358,33 @@ def add_test_form(person):
         st.rerun()
 
 
+# --- Notizen ---
+
+def show_notes():
+    """Rendert eine einfache Notizen-Seite pro angemeldetem Benutzer."""
+    st.header("Notizen")
+    username = st.session_state.get("username") or "guest"
+
+    notes = hole_notizen(username)
+
+    if notes:
+        st.subheader("Vorhandene Notizen")
+        for n in notes:
+            st.write(f"- {n.get('datum')} — {n.get('text')}")
+    else:
+        st.info("Keine Notizen vorhanden.")
+
+    st.subheader("Neue Notiz hinzufügen")
+    text = st.text_area("Notiz")
+    if st.button("Speichern"):
+        if not text.strip():
+            st.error("Notiz ist leer.")
+        else:
+            notiz_hinzufuegen(username, text.strip())
+            st.success("Notiz gespeichert.")
+            st.rerun()
+
+
 # --- Router ---
 
 def main():
@@ -376,6 +404,9 @@ def main():
 
     elif page == "select":
         select_person()
+
+    elif page == "notes":
+        show_notes()
 
     elif page == "analysis":
         person = st.session_state.selected_person

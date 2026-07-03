@@ -16,6 +16,24 @@ from .components.compare import (
     get_window_seconds,
 )
 from .components.utlispatient import get_other_patients, get_comparable_metrics
+from .components.notizen import load_notes, save_note, delete_note
+
+# Ensure a light theme and wide layout. `set_page_config` must run before other Streamlit calls.
+try:
+    st.set_page_config(page_title="Digitale EKG-Datenbank", layout="wide")
+except Exception:
+    pass
+
+# Fallback CSS to force white background where theme might not cover everything.
+st.markdown(
+    """
+    <style>
+    .main .block-container{background-color: #ffffff !important;}
+    .stApp {background-color: #ffffff !important;}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 
 class App:
@@ -81,12 +99,13 @@ class App:
 
             with col3:
                 if st.button(
-                    "⚙️ Einstellungen",
-                    key="home_settings",
+                    "📝 Notizen",
+                    key="home_notes",
                     use_container_width=True,
-                    type="secondary"
+                    type="secondary",
                 ):
-                    st.info("Einstellungen folgen.")
+                    st.session_state.page = "notes"
+                    st.rerun()
 
         else:
             st.info(
@@ -126,6 +145,44 @@ class App:
                     type="secondary"
                 ):
                     logout(force=True)
+
+    def show_notes(self):
+        st.button("⬅ Zurück", key="notes_back", on_click=Navigation.go_home)
+        st.header("Notizen")
+        st.write("Hier ist Platz für persönliche Notizen und Anmerkungen. Nur Sie haben Zugriff auf diese Notizen.")
+        notes = load_notes()  
+
+        if notes:
+            st.subheader("Vorhandene Notizen")
+            for i, n in enumerate(notes):
+                col_text, col_action = st.columns([9, 1])
+                with col_text:
+                    st.write(f"{n.get('datum')} — {n.get('text')}")
+                with col_action:
+                    if st.button("Löschen", key=f"delete_note_{i}"):
+                        ok = delete_note(i)
+                        if ok:
+                            st.success("Notiz gelöscht.")
+                            st.rerun()
+                        else:
+                            st.error("Löschen fehlgeschlagen.")
+        else:
+            st.info("Keine Notizen vorhanden.")
+
+        st.subheader("Neue Notiz hinzufügen")
+        new = st.text_area("Neue Notiz", key="new_note_text")
+        if st.button("Speichern", key="save_new_note"):
+            if not new.strip():
+                st.error("Notiz ist leer.")
+            else:
+                save_note(new.strip())
+                st.success("Notiz gespeichert.")
+                st.rerun()
+
+
+
+
+
 
     # --- Person auswählen ---
 
@@ -602,6 +659,8 @@ class App:
             self.select_person()
         elif page == "add_person_form":
             self.add_person_form()
+        elif page == "notes":
+            self.show_notes()
         elif page == "analysis":
             person = st.session_state.selected_person
             if person is None and st.session_state.get("role") == "patient":

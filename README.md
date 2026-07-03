@@ -1,67 +1,104 @@
-# Abschlussprojekt 
+# Abschlussprojekt
 
 **Teilnehmerinnen:** Melanie Pfusterer, Lisa Raffler, Vanessa Reich
 
-Das Projekt erstellt mit Hilfe von Streamlit eine interaktive Webseite, die als digitale Datenbank für Patienten und Administratoren dient. Nutzer können verschiedene Personen auswählen, deren Stammdaten und zugehörige Attribute einsehen sowie auf einer individuellen Detailseite das jeweils passende EKG‑Diagramm anzeigen lassen.
+Digitales EKG-Verwaltungssystem mit Streamlit. Die Anwendung ist als Patientenverwaltung für medizinisches Personal und Patient*innen konzipiert.
 
-Zur Installation des Projekts wird pip verwendet.
+## Was das Projekt kann
 
-## Um die Webseite anzeigen zu lassen, muss folgendermaßen vorgegangen werden:
+- Rollenbasierte Anmeldung für `admin`, `doctor` und `patient`
+- Zentrale Verwaltung von Patient*innenprofilen
+- Anzeige von EKG-Daten, Analyseergebnissen und Vergleichsansichten
+- Upload neuer EKG-Tests und Speicherung in der Datenbank
+- Sichere Passwortspeicherung mit SHA-256 Hashing
+- Automatische Generierung neuer Patientenpasswörter
 
-1. Installation der Abhängigkeiten
-   **->** pip install -r requirements.txt
+Weitere aktuelle Funktionen (Stand 2026-07-03):
 
-2. Projekt starten
-   **->** streamlit run main.py
+- Persönliche Notizen: Benutzer können eigene Notizen erstellen und löschen.
+  - Notizen werden per Benutzer in `data/notes.json` gespeichert.
+  - Notizen lassen sich in der UI neben jeder Notiz löschen (Löschen entfernt Eintrag aus `data/notes.json`).
+- Theme / Layout: Die Anwendung erzwingt ein helles (weißes) Hintergrund-Layout via `.streamlit/config.toml` und zusätzlichem CSS.
+- Navigation/Routing: Die App nutzt eine class-basierte Steuerung (`frontend/app/steuerung.py`) als zentrale Navigation; einige Legacy-Module wurden angepasst.
 
-## Was macht das Projekt? 
+## Installationsanleitung
 
-- Lädt EKG‑Rohdaten und Stammdaten aus dem data/‑Ordner.
+1. Abhängigkeiten installieren
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-- Bereitet die EKG‑Signale auf und erkennt Peaks (R‑Zacken).
+2. Anwendung starten
+   ```bash
+   streamlit run main.py
+   ```
 
-- Visualisiert die EKG‑Kurven im Frontend (Streamlit‑Weboberfläche).
+## Projektübersicht
 
-- Zeigt Patient*inneninformationen und zugehörige Bilder an.
+### `main.py`
+Startet die Streamlit-Anwendung.
 
-- Ermöglicht die Auswahl verschiedener Datensätze über eine interaktive Oberfläche.
+### `backend/`
+- Verarbeitet Patienten- und EKG-Daten
+- Enthält Klassen zur Datenbankanbindung und Datenaufbereitung
 
+### `backend/funktionen/notizen.py`
+- Stellt die Notiz-API bereit: `lade_notizen`, `speichere_notizen`, `notiz_hinzufuegen`, `notiz_loeschen`.
 
-## Projektstruktur
+### `frontend/`
+- Stellt die Benutzeroberfläche und Navigation bereit
+- Verwaltet Login, Logout, Rollen und Seitensteuerung
 
-* **main.py**
-  Zentrales Startskript des Projekts. 
+Wichtige Dateien:
+- `frontend/app/steuerung.py`: Haupt-UI-Controller (class `App`) — hier sind Seiten wie `home`, `select`, `analysis`, `notes` implementiert.
+- `frontend/login.py`: Login/Logout, Passwort-Hashing und Migration von Klartext-Passwörtern.
+- `frontend/app/components/notizen.py`: UI-Wrapper für Notizen (Laden, Speichern, Löschen).
 
-* **backend/**
-Beinhaltet die Dateien zur Verarbeitung der EKG Daten sowie der Personen.
+### `funktionen/`
+- Enthält Hilfsfunktionen für Filter, HRV-Berechnung und Peak-Detektion
 
-* **frontend/**
-  Beinhaltet die Benutzeroberfläche des Projekts.
-  app.py – Streamlit‑Anwendung, steuert Navigation, UI‑Elemente und interaktive
- Darstellung der EKG‑Plots, Auswahlmenüs, Buttons, usw. 
+### `data/`
+- `users.json`: Benutzerkonten mit Rollen und gehashten Passwörtern
+- `persons.db.json`: Patientenprofile und zugehörige EKG-Tests
+- `ekg_data/`: Rohdaten für EKG-Tests
+- `images/`: Bilder, die im Frontend angezeigt werden
+- `notes.json`: Persönliche Notizen, organisiert nach Benutzern (z. B. `{ "doctor1": [ {"datum": "03.07.2026", "text": "..."} ] }`).
 
+## Wichtige Details
 
-* **funktionen/**
-  Sammelt spezialisierte Funktionsmodule, die unabhängig vom Backend genutzt werden können.
- peak_detection.py – Algorithmus zur Erkennung von Peaks in EKG‑Signalen
+- Patient*innen-Passwörter werden automatisch generiert und nur als Hash gespeichert.
+- Das Format für generierte Passwörter ist:
+  - erste 3 Buchstaben Vorname + erste 3 Buchstaben Nachname + letzte 2 Ziffern Geburtsjahr
+- Bestehende Klartext-Passwörter werden beim ersten Login automatisch auf Hash umgestellt.
 
-* **data**
- Speicherort aller Rohdaten.
- ekg_data/ – Textdateien mit Ruhe‑ und Belastungs‑EKGs
- activity.csv – Aktivitätsdaten
- persons.json – Stammdaten der Proband*innen
- images/ - Enthält Bilder, die im Frontend angezeigt werden 
+Weitere Hinweise zur Sicherheit:
+- Passwörter werden mit `hashlib.sha256` gehasht und in `data/users.json` gespeichert. Alte Klartext-Passwörter werden bei erfolgreichem Login migriert.
 
-## Bearbeitete freie Aufgaben
-Was man dann auch in die finale Abgabe noch mit einbauen könnte:
-- Vergleich zweier Personen
-- Mehrere EKGs pro Person als Timeline
-- Datensatzabgleichung mit Normwerten 
+## Nutzung
 
-##  Headup Webseite:
+- `admin` / `doctor`
+  - können Patient*innen anlegen und löschen
+  - können Patient*innen suchen und analysieren
+  - können EKG-Testdaten vergleichen
 
-![Startbild]
-![AuswahlPatient]
-![Patient]
+- `patient`
+  - kann eigene EKG-Daten anzeigen
+  - kann eigene Analyse-Seite aufrufen
+  - hat direkten Logout-Button auf der Startseite
+  - kann persönliche Notizen ansehen, hinzufügen und löschen
 
+## Erweiterungsmöglichkeiten
 
+- Passwort-Reset für Patient*innen
+- Zusätzliche EKG-Formate und Importfunktionen
+- Erweiterte Vergleichsvisualisierungen
+- Verbesserte mobile Darstellung
+
+## Debug & Entwicklung
+
+- Logs und Fehler erscheinen in der Konsole, wenn `streamlit run main.py` verwendet wird.
+- Wenn UI-Aktionen (z. B. Löschen einer Notiz) unerwartetes Verhalten zeigen, prüfe `data/notes.json` und die Konsole-Ausgabe.
+
+---
+
+Falls du möchtest, übernehme ich noch eine kurze Release-Note oder ein Changelog-File mit den letzten Änderungen.
