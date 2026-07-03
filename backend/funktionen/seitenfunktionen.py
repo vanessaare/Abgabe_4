@@ -3,9 +3,9 @@ import datetime
 import streamlit as st
 from backend.person import Person
 from backend.loader import load_test
-from funktionen.hrv import calculate_hrv_rmssd
+from backend.funktionen.hrv import calculate_hrv_rmssd
 from frontend.login import login, logout, create_patient_account
-from funktionen.filter_persons import filter_persons
+from backend.funktionen.filter_persons import filter_persons
 
 persons = Person.load_persons()
 

@@ -58,16 +58,16 @@ class App:
 
             col3, col4 = st.columns(2)
 
-            with col3:
+            with col4:
                 if st.button(
-                    "📊 Statistiken",
-                    key="home_stats",
+                    "🚪 Logout",
+                    key="home_logout",
                     use_container_width=True,
                     type="secondary"
                 ):
-                    st.info("Statistik-Seite folgt.")
+                    logout(force=True)
 
-            with col4:
+            with col3:
                 if st.button(
                     "⚙️ Einstellungen",
                     key="home_settings",
@@ -97,19 +97,18 @@ class App:
     def select_person(self):
         '''Rendert die Seite zur Patientenauswahl mit Filteroptionen und ermöglicht das Hinzufügen neuer Patienten.'''
 
-        st.subheader("🔍 Filter")
+        st.header("Filter")
 
         st.button("⬅ Zurück", key="select_back", on_click=Navigation.go_home)
 
-        name_filter = st.text_input("Name suchen")
+        name_filter = st.text_input("Suche nach Vor- oder Nachname")
         filtered = self.person_manager.get_filtered(name_filter)
 
         if not filtered:
             st.warning("Keine passenden Patienten gefunden.")
         
         else:
-            st.header("Patient:in auswählen")
-
+            st.subheader("Patientenliste")
             names = [p.get_full_name() for p in filtered]
             selected_name = st.selectbox("Bitte Patient:in auswählen:", names)
             selected_person = next(p for p in filtered if p.get_full_name() == selected_name)
@@ -123,19 +122,19 @@ class App:
 
             with col2:
                 if st.session_state.role != "patient":
-                    if st.button("🗑️", key="select_delete"):
+                    if st.button("Patient:in löschen 🗑️", key="select_delete"):
                         self.person_manager.delete_person(selected_person)
 
-        if st.session_state.get("role") != "patient":
-            with st.expander("➕ Neue Person hinzufügen"):
-                self.add_person_form()
+        #if st.session_state.get("role") != "patient":
+            #with st.expander("➕ Neue Person hinzufügen"):
+                #self.add_person_form()
 
     # --- Neue Person hinzufügen ---
 
     def add_person_form(self):
         '''Rendert das Formular zum Hinzufügen einer neuen Person mit Eingabefeldern für Name, Geburtsjahr, Geschlecht und optionales Bild.'''
 
-        st.subheader("➕ Neue Person hinzufügen")
+        st.subheader("➕ Neue Patienten hinzufügen")
         st.button("⬅ Zurück", key="add_person_back", on_click=Navigation.go_home)
         with st.form("add_person"):
             col1, col2 = st.columns(2)
@@ -466,7 +465,7 @@ class App:
     def edit_person_form(self, person):
         '''Rendert das Formular zum Editieren der Informationen einer Person mit Eingabefeldern für Name, Geburtsjahr, Geschlecht und optionales Bild.'''
 
-        st.subheader("✏️ Person editieren")
+        st.subheader("✏️ Patient:in bearbeiten")
         with st.form("edit_person"):
             col1, col2 = st.columns(2)
             firstname = col1.text_input("Vorname", value=person.firstname)
@@ -553,6 +552,11 @@ class App:
         if not login():
             st.stop()
         logout()
+
+        col1, col2 = st.columns([2, 1])
+        with col2:
+            st.image("data/images/Logo_EKGApp.png", width=300)
+
 
         st.sidebar.write(f"Angemeldet als: {st.session_state.username}")
 

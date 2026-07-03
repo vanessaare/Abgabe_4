@@ -1,7 +1,7 @@
 import streamlit as st
 
 from backend.person import Person
-from funktionen.filter_persons import filter_persons
+from backend.funktionen.filter_persons import filter_persons
 
 # --- Personen-Verwaltung ---
 

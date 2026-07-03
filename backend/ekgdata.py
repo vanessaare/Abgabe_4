@@ -1,7 +1,7 @@
 import pandas as pd
 import plotly.express as px
 import numpy as np
-from funktionen.peak_detection import peak_detection
+from backend.funktionen.peak_detection import peak_detection
 import plotly.graph_objects as go
 
 # --- EKG-Datenmodell ---

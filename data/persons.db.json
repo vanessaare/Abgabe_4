@@ -116,21 +116,6 @@
             "gender": "Female"
         },
         "8": {
-            "id": 16,
-            "date_of_birth": 1987,
-            "firstname": "Roy",
-            "lastname": "Bianco",
-            "picture_path": "data/images/Person4_male.png",
-            "ekg_tests": [
-                {
-                    "id": 205,
-                    "date": "2026-05-13",
-                    "result_link": "data/ekg_data/16_205.txt"
-                }
-            ],
-            "gender": "Male"
-        },
-        "9": {
             "id": 17,
             "date_of_birth": 1995,
             "firstname": "Michaela",
@@ -140,7 +125,9 @@
                 {
                     "id": 206,
                     "date": "2026-06-26",
-                    "result_link": "data/ekg_data/17_206.fit"
+                    "result_link": "data/ekg_data/17_206.fit",
+                    "average_hr": 132.28,
+                    "hrv_rmssd": 63.42455585744599
                 }
             ],
             "gender": "Female"

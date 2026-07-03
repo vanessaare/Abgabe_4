@@ -1,7 +1,7 @@
 import streamlit as st 
 from backend.loader import load_test
 from backend.person import Person
-from funktionen.hrv import calculate_hrv_rmssd
+from backend.funktionen.hrv import calculate_hrv_rmssd
 
 # --- Analyse-Verwaltung ---
 

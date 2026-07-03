@@ -73,15 +73,58 @@ def delete_patient_account(person_id):
 def login():
     '''Rendert das Login-Formular und überprüft die Anmeldedaten.'''
 
+
+    st.markdown("""
+    <style>
+
+    .main {
+        background-color: #F5F7FA;
+    }
+
+    .stTextInput input {
+        border-radius: 8px;
+    }
+
+    .stButton > button {
+        border-radius: 10px;
+        height: 45px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    </style>
+    """, unsafe_allow_html=True)
+
+
+    
     if "logged_in" not in st.session_state:
         st.session_state.logged_in = False
 
     if not st.session_state.logged_in:
-        st.title("Login")
+        
+        links, mitte, rechts = st.columns([1, 2, 1])
+
+        with mitte:
+            st.image("data/images/Logo_EKGApp.png", width=450)
+
+            st.markdown(
+            "<h2 style='text-align:center;'>Willkommen bei CardioCare</h2>",
+            unsafe_allow_html=True
+            )
+
+            st.markdown(
+            "<p style='text-align:center; color:gray;'>"
+            "Sicherer Zugriff auf Ihre Gesundheitsdaten"
+            "</p>",
+            unsafe_allow_html=True
+        )
+
+
         username = st.text_input("Benutzername")
         password = st.text_input("Passwort", type="password")
+        submit = st.button("Anmelden", use_container_width=True)
 
-        if st.button("Anmelden"):
+        if submit:
             if username in USERS and USERS[username]["password"] == password:
                 st.session_state.logged_in = True
                 st.session_state.username = username
@@ -95,10 +138,10 @@ def login():
     return True
 
 
-def logout():
+def logout(force: bool = False):
     '''Rendert die Logout-Schaltfläche und setzt den Anmeldestatus zurück, wenn der Benutzer sich abmeldet.'''
 
-    if st.sidebar.button("Logout"):
+    if force or st.sidebar.button("Logout"):
         st.session_state.logged_in = False
         st.session_state.username = None
         st.session_state.role = None
