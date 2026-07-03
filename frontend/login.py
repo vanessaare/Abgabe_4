@@ -1,3 +1,4 @@
+import hashlib
 import streamlit as st
 import json
 
@@ -25,6 +26,14 @@ def normalize_username(value: str) -> str:
         value = value.replace(old, new)
     return "".join(ch if ch.isalnum() or ch in {"_", "-"} else "_" for ch in value)
 
+def hash_password(password: str) -> str:
+    '''Erstellt einen SHA-256-Hash aus dem Passwort.'''
+    return hashlib.sha256(password.encode("utf-8")).hexdigest()
+
+
+def is_hashed_password(value: str) -> bool:
+    '''Prüft, ob der gespeicherte Wert ein SHA-256-Hash ist.'''
+    return isinstance(value, str) and len(value) == 64 and all(ch in "0123456789abcdef" for ch in value)
 
 # --- Account-Verwaltung ---
 
@@ -42,10 +51,13 @@ def create_patient_account(person, username=None, password=None):
         username = f"{base_username}{counter}"
 
     if password is None:
-        password = f"{person.firstname.lower()[:3]}{person.lastname.lower()[:4]}{person.id}"
+        firstname_part = person.firstname.lower()[:3]
+        lastname_part = person.lastname.lower()[:3]
+        birthyear_part = str(person.date_of_birth)[-2:]
+        password = f"{firstname_part}{lastname_part}{birthyear_part}"
 
     USERS[username] = {
-        "password": password,
+        "password": hash_password(password),
         "role": "patient",
         "person_id": person.id,
     }
@@ -125,13 +137,29 @@ def login():
         submit = st.button("Anmelden", use_container_width=True)
 
         if submit:
-            if username in USERS and USERS[username]["password"] == password:
-                st.session_state.logged_in = True
-                st.session_state.username = username
-                st.session_state.role = USERS[username]["role"]
-                st.session_state.person_id = USERS[username].get("person_id")
-                st.rerun()
+            if username in USERS:
+                stored_password = USERS[username].get("password")
+                if stored_password is None:
+                    st.error("Ungültige Benutzerkonfiguration.")
+                    return False
 
+                if is_hashed_password(stored_password):
+                    valid = hash_password(password) == stored_password
+                else:
+                    valid = password == stored_password
+
+                if valid:
+                    if not is_hashed_password(stored_password):
+                        USERS[username]["password"] = hash_password(password)
+                        save_users()
+
+                    st.session_state.logged_in = True
+                    st.session_state.username = username
+                    st.session_state.role = USERS[username]["role"]
+                    st.session_state.person_id = USERS[username].get("person_id")
+                    st.rerun()
+                else:
+                    st.error("Falscher Benutzername oder Passwort")
             else:
                 st.error("Falscher Benutzername oder Passwort")
         return False

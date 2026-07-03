@@ -29,7 +29,19 @@ class App:
     def home(self):
         '''Rendert die Startseite der App mit Optionen basierend auf der Rolle des Benutzers.'''
         st.title("Digitale EKG-Datenbank 🫀")
-        st.subheader(f"Herzlich Willkommen, {st.session_state.username}!")
+
+        display_name = st.session_state.username
+        if st.session_state.role == "patient":
+            patient = st.session_state.get("selected_person")
+            if patient is None and st.session_state.get("person_id") is not None:
+                patient = next(
+                    (p for p in self.person_manager.persons if p.id == st.session_state.person_id),
+                    None,
+                )
+            if patient is not None:
+                display_name = f"{patient.firstname} {patient.lastname}"
+
+        st.subheader(f"Herzlich Willkommen, {display_name}!")
 
         if st.session_state.role != "patient":
             st.write("Was möchten Sie tun?")
@@ -82,15 +94,38 @@ class App:
                 "Neue Tests oder Änderungen können ausschließlich vom medizinischen Personal vorgenommen werden."
             )
 
-            if st.button(
-                "🫀 Meine EKG-Daten anzeigen",
-                key="home_patient_data",
-                use_container_width=True,
-                type="primary"
-            ):
-                # Der eingeloggte Patient sollte bereits im Loginals selected_person gespeichert werden.
-                st.session_state.page = "analysis"
-                st.rerun()
+            col1, col2 = st.columns(2)
+
+            with col1:
+                if st.button(
+                    "🫀 Meine EKG-Daten anzeigen",
+                    key="home_patient_data",
+                    use_container_width=True,
+                    type="primary"
+                ):
+                    patient_id = st.session_state.get("person_id")
+                    if patient_id is not None:
+                        patient = next(
+                            (p for p in self.person_manager.persons if p.id == patient_id),
+                            None,
+                        )
+                        if patient is not None:
+                            st.session_state.selected_person = patient
+                            st.session_state.page = "analysis"
+                            st.rerun()
+                        else:
+                            st.error("Zu diesem Benutzerkonto konnte kein Patient gefunden werden.")
+                    else:
+                        st.error("Ihr Benutzerkonto ist nicht korrekt verknüpft.")
+
+            with col2:
+                if st.button(
+                    "🚪 Logout",
+                    key="home_patient_logout",
+                    use_container_width=True,
+                    type="secondary"
+                ):
+                    logout(force=True)
 
     # --- Person auswählen ---
 
@@ -196,7 +231,9 @@ class App:
     def show_person(self, person):
         '''Rendert die Detailansicht einer ausgewählten Person mit Tabs für allgemeine Informationen, EKG-Analysen und Vergleichsmöglichkeiten.'''
 
+        
         st.header(person.get_full_name())
+        st.button("⬅ Zurück zur Startseite", key="show_person_back", on_click=Navigation.go_home)
 
         #st.markdown(unsafe_allow_html=True)
 
@@ -222,7 +259,6 @@ class App:
                 else:
                     st.warning("⚠️ Keine EKG-Daten")
 
-            st.button("⬅ Zurück", key="show_person_back", on_click=Navigation.go_select)
 
             # Editier- und Test-Hinzufügen-Bereich nur für berechtigte Rollen
             if st.session_state.get("role") != "patient":
@@ -268,9 +304,7 @@ class App:
 
         with tab_comparison:
             st.subheader("↔ Vergleich von EKG-Daten")
-            st.caption("Patientenvergleich.")
 
-            # Refresh persisted person data so precomputed Auswertewerte angezeigt werden.
             self.person_manager.persons = Person.load_persons()
             person = next((p for p in self.person_manager.persons if p.id == person.id), person)
 
@@ -570,6 +604,14 @@ class App:
             self.add_person_form()
         elif page == "analysis":
             person = st.session_state.selected_person
+            if person is None and st.session_state.get("role") == "patient":
+                patient_id = st.session_state.get("person_id")
+                if patient_id is not None:
+                    person = next(
+                        (p for p in self.person_manager.persons if p.id == patient_id),
+                        None,
+                    )
+                    st.session_state.selected_person = person
             if person is None:
                 st.session_state.page = "select"
                 st.rerun()

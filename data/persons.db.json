@@ -35,7 +35,8 @@
                     "id": 102,
                     "date": "2026-04-22",
                     "result_link": "data/ekg_data/02_Ruhe.txt",
-                    "average_hr": 69.02785767113157
+                    "average_hr": 69.02785767113157,
+                    "hrv_rmssd": 47.70958833690675
                 }
             ],
             "gender": "Male"
@@ -80,7 +81,8 @@
                 {
                     "id": 105,
                     "date": "2026-02-18",
-                    "result_link": "data/ekg_data/05_Belastung.txt"
+                    "result_link": "data/ekg_data/05_Belastung.txt",
+                    "average_hr": 113.21800085917207
                 }
             ],
             "gender": "Female"
@@ -110,24 +112,24 @@
                 {
                     "id": 207,
                     "date": "2026-06-26",
-                    "result_link": "data/ekg_data/14_207.txt"
+                    "result_link": "data/ekg_data/14_207.txt",
+                    "average_hr": 113.03487509275291
                 }
             ],
             "gender": "Female"
         },
         "8": {
-            "id": 17,
-            "date_of_birth": 1995,
+            "id": 15,
+            "date_of_birth": 1997,
             "firstname": "Michaela",
             "lastname": "Shiffrin",
-            "picture_path": "data/images/Person5_female.png",
+            "picture_path": "data/images/Person15_female.png",
             "ekg_tests": [
                 {
-                    "id": 206,
-                    "date": "2026-06-26",
-                    "result_link": "data/ekg_data/17_206.fit",
-                    "average_hr": 132.28,
-                    "hrv_rmssd": 63.42455585744599
+                    "id": 208,
+                    "date": "2026-07-03",
+                    "result_link": "data/ekg_data/15_208.txt",
+                    "average_hr": 113.21800085917207
                 }
             ],
             "gender": "Female"

@@ -1,6 +1,7 @@
 import streamlit as st
 
 from backend.person import Person
+from frontend.login import delete_patient_account
 from backend.funktionen.filter_persons import filter_persons
 
 # --- Personen-Verwaltung ---
@@ -23,6 +24,7 @@ class PersonManager:
 
         self.persons = [p for p in self.persons if p.id != person.id]
         Person.save_persons(self.persons)
+        delete_patient_account(person.id)
 
         st.session_state.page = "home"
         st.session_state.selected_person = None

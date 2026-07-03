@@ -1,23 +1,50 @@
 {
   "admin": {
-    "password": "admin123",
+    "password": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
     "role": "admin"
   },
   "doctor1": {
-    "password": "doctor123",
+    "password": "f348d5628621f3d8f59c8cabda0f8eb0aa7e0514a90be7571020b1336f26c113",
     "role": "doctor"
   },
-  "patient1": {
-    "password": "patient123",
-    "role": "patient"
+  "patient_anne_mayer": {
+    "password": "bb85483500c8ee48903decb71eb0355a1f90b707096558e6bec3eba027090968",
+    "role": "patient",
+    "person_id": 1
+  },
+  "patient_luka_huber": {
+    "password": "1b4b1b4e6817e598c09bc28f9f771d6a06b6422116d9c7e962ce79c7f6198e11",
+    "role": "patient",
+    "person_id": 2
+  },
+  "patient_sophie_gruber": {
+    "password": "bd2e07a63a3ec3417adc309386ecce40d8df9923db1e8b9e09be008a7e03494f",
+    "role": "patient",
+    "person_id": 3
+  },
+  "patient_david_schneider": {
+    "password": "f5263f9b5b6a2aadd0a97c7f3ebd72a9140db85ec767e5d5e37fb8f2609cd8a7",
+    "role": "patient",
+    "person_id": 4
+  },
+  "patient_laura_berger": {
+    "password": "26307d81808a2bdb3926bf25faf9859bbbd6b80a4a807462496bb05331436934",
+    "role": "patient",
+    "person_id": 5
+  },
+  "patient_michael_wagner": {
+    "password": "c48e64c7c67342598bcc09025a176a9796ae0d1910b96aeac08b46fdac72cb17",
+    "role": "patient",
+    "person_id": 6
   },
   "patient_violet_sorrengail": {
-    "password": "viosorr14",
+    "password": "5e167b6a23b16d940998a7226d893f2186e63f8f8e8b13d78a6c88690b1c673a",
     "role": "patient",
     "person_id": 14
   },
   "patient_michaela_shiffrin": {
-    "password": "micshif15",
+    "password": "f31516abd370b2152b10df25ad0e00a665d8a24748542bd56e99875ff1ce5f9f",
     "role": "patient",
-    "person_id": 17
-  }}
+    "person_id": 15
+  }
+}
