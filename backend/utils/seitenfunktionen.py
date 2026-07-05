@@ -1,12 +1,12 @@
 import os
 import datetime
 import streamlit as st
-from backend.models.person import Person
-from backend.services.loader import load_test
+from backend.module_klassen.person import Person
+from backend.funktionen.loader import load_test
 from backend.utils.hrv import calculate_hrv_rmssd
 from frontend.Login.login import manager
 from backend.utils.filter_persons import filter_persons
-from backend.services.notes import hole_notizen, notiz_hinzufuegen
+from backend.funktionen.notes import hole_notizen, notiz_hinzufuegen
 
 persons = Person.load_persons()
 

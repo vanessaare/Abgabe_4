@@ -1,4 +1,4 @@
-from backend.services.loader import load_test
+from backend.funktionen.loader import load_test
 from PIL import Image
 import json
 import os

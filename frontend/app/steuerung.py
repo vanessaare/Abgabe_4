@@ -5,18 +5,18 @@ import streamlit as st
 from backend.module_klassen.person import Person
 from frontend.Login.login import manager
 
-from frontend.app_steuerung import person_manager
-from frontend.ekg_plot.analysis_manager import AnalysisManager
-from frontend.app_steuerung.navigation import Navigation
-from frontend.app_steuerung.session import SessionManager
-from frontend.ekg_plot.compare import (
+from .person_manager import PersonManager
+from ..ekg_plot.analysis_manager import AnalysisManager
+from .navigation import Navigation
+from .session import SessionManager
+from ..ekg_plot.compare import (
     plot_ekg_overlay,
     get_metric_value,
     get_test_duration_seconds,
     get_window_seconds,
 )
-from frontend.ekg_plot.utlispatient import get_other_patients, get_comparable_metrics
-from frontend.Notizen.notizen import load_notes, save_note, delete_note
+from ..ekg_plot.utlispatient import get_other_patients, get_comparable_metrics
+from ..Notizen.notizen import load_notes, save_note, delete_note
 
 # Ensure a light theme and wide layout. `set_page_config` must run before other Streamlit calls.
 try:
@@ -41,7 +41,7 @@ class App:
 
     def __init__(self):
         '''Initialisiert die App und ihre Manager.'''
-        self.person_manager = person_manager.PersonManager()
+        self.person_manager = PersonManager()
         self.analysis_manager = AnalysisManager()
 
     def home(self):
