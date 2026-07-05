@@ -48,17 +48,13 @@ def hole_notizen(username: str) -> List[Dict]:
 
 
 def notiz_loeschen(username: str, index: int) -> bool:
-    """Löscht die Notiz an Position `index` für `username`.
-
-    Gibt True zurück, wenn erfolgreich, False wenn Index ungültig.
-    """
+    """Löscht die Notiz an Position `index` für `username`."""
     notizen = lade_notizen()
     user_notes = notizen.get(username)
     if not user_notes:
         return False
     if index < 0 or index >= len(user_notes):
         return False
-    # Entfernen und speichern
     user_notes.pop(index)
     notizen[username] = user_notes
     speichere_notizen(notizen)

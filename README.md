@@ -13,13 +13,7 @@ Digitales EKG-Verwaltungssystem mit Streamlit. Die Anwendung ist als Patientenve
 - Sichere Passwortspeicherung mit SHA-256 Hashing
 - Automatische Generierung neuer Patientenpasswörter
 
-Weitere aktuelle Funktionen (Stand 2026-07-03):
 
-- Persönliche Notizen: Benutzer können eigene Notizen erstellen und löschen.
-  - Notizen werden per Benutzer in `data/notes.json` gespeichert.
-  - Notizen lassen sich in der UI neben jeder Notiz löschen (Löschen entfernt Eintrag aus `data/notes.json`).
-- Theme / Layout: Die Anwendung erzwingt ein helles (weißes) Hintergrund-Layout via `.streamlit/config.toml` und zusätzlichem CSS.
-- Navigation/Routing: Die App nutzt eine class-basierte Steuerung (`frontend/app/steuerung.py`) als zentrale Navigation; einige Legacy-Module wurden angepasst.
 
 ## Installationsanleitung
 

@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import plotly.graph_objects as go
-from backend.loader import load_test
+from backend.services.loader import load_test
 
 # --- Metriken & Datenextraktion ---
 
@@ -233,5 +233,10 @@ def plot_ekg_overlay(patient_a, patient_b, selected_test_a=None, selected_test_b
         hoverlabel=dict(bgcolor="white", font_size=12, font_family="Arial"),
         xaxis_range=[0, window_sec] if window_sec is not None else None,
     )
+    # disable drag-based zoom/select so users can only use modebar buttons
+    try:
+        fig.update_layout(dragmode=False)
+    except Exception:
+        pass
 
     return fig, None

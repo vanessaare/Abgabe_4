@@ -1,11 +1,8 @@
 def peak_detection(series, threshold, respacing_factor):
-    '''Findet Peaks in einer gegebenen Serie basierend auf den angegebenen Parametern.'''
-    
-    # Respace the series
+    """Findet Peaks in einer gegebenen Serie basierend auf den angegebenen Parametern."""
+
     series = series.iloc[::respacing_factor]
-    
-    # Filter the series
-    series = series[series>threshold]
+    series = series[series > threshold]
 
     peaks = []
     last = 0
@@ -18,6 +15,6 @@ def peak_detection(series, threshold, respacing_factor):
         next_val = row
 
         if last < current and current > next_val and current > threshold:
-            peaks.append(index-respacing_factor)
+            peaks.append(index - respacing_factor)
 
     return peaks

@@ -1,5 +1,5 @@
 def filter_persons(persons, name_filter):
-    '''Filtert die Personenliste basierend auf dem angegebenen Namen.'''
+    """Filtert die Personenliste basierend auf dem angegebenen Namen."""
 
     filtered = persons
 

@@ -1,8 +1,7 @@
 import streamlit as st 
-from backend.loader import load_test
-from backend.person import Person
-from backend.funktionen.hrv import calculate_hrv_rmssd
-
+from backend.services.loader import load_test
+from backend.models.person import Person
+from backend.utils.hrv import calculate_hrv_rmssd
 # --- Analyse-Verwaltung ---
 
 class AnalysisManager:
@@ -47,7 +46,12 @@ class AnalysisManager:
 
             try:
                 fig = ekg.plot_with_peaks_window(start_sec / 60, (start_sec + window_sec) / 60)
-                st.plotly_chart(fig, use_container_width=True, key=f"ekg_{start_sec}")
+                config = {
+                    "scrollZoom": False,
+                    "modeBarButtonsToRemove": ["select2d", "lasso2d", "zoom2d", "autoScale2d", "resetScale2d"],
+                    "displaylogo": False,
+                }
+                st.plotly_chart(fig, width="stretch", key=f"ekg_{start_sec}", config=config)
             except Exception as e:
                 st.error(f"Plot Fehler: {e}")
 

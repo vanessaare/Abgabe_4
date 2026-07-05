@@ -2,21 +2,21 @@
 import datetime
 import streamlit as st
 
-from backend.person import Person
-from frontend.login import login, logout, create_patient_account
+from backend.models.person import Person
+from frontend.Login.login import manager
 
-from .person_manager import PersonManager
-from .analysis_manager import AnalysisManager
-from .navigation import Navigation
-from .session import SessionManager
-from .components.compare import (
+from frontend.app_steuerung import person_manager
+from frontend.ekg_plot.analysis_manager import AnalysisManager
+from frontend.app_steuerung.navigation import Navigation
+from frontend.app_steuerung.session import SessionManager
+from frontend.ekg_plot.compare import (
     plot_ekg_overlay,
     get_metric_value,
     get_test_duration_seconds,
     get_window_seconds,
 )
-from .components.utlispatient import get_other_patients, get_comparable_metrics
-from .components.notizen import load_notes, save_note, delete_note
+from frontend.ekg_plot.utlispatient import get_other_patients, get_comparable_metrics
+from frontend.Notizen.notizen import load_notes, save_note, delete_note
 
 # Ensure a light theme and wide layout. `set_page_config` must run before other Streamlit calls.
 try:
@@ -41,7 +41,7 @@ class App:
 
     def __init__(self):
         '''Initialisiert die App und ihre Manager.'''
-        self.person_manager = PersonManager()
+        self.person_manager = person_manager.PersonManager()
         self.analysis_manager = AnalysisManager()
 
     def home(self):
@@ -70,7 +70,7 @@ class App:
                 if st.button(
                     "➕ Neuen Patienten hinzufügen",
                     key="home_add_patient",
-                    use_container_width=True,
+                    width = "stretch",
                     type="secondary"
                 ):
                     st.session_state.page = "add_person_form"
@@ -80,7 +80,7 @@ class App:
                 if st.button(
                     "🔍 Patienten suchen",
                     key="home_search_patient",
-                    use_container_width=True,
+                    width = "stretch",
                     type="primary"
                 ):
                     st.session_state.page = "select"
@@ -92,16 +92,16 @@ class App:
                 if st.button(
                     "🚪 Logout",
                     key="home_logout",
-                    use_container_width=True,
+                    width = "stretch",
                     type="secondary"
                 ):
-                    logout(force=True)
+                    manager.logout(force=True)
 
             with col3:
                 if st.button(
                     "📝 Notizen",
                     key="home_notes",
-                    use_container_width=True,
+                    width = "stretch",
                     type="secondary",
                 ):
                     st.session_state.page = "notes"
@@ -119,7 +119,7 @@ class App:
                 if st.button(
                     "🫀 Meine EKG-Daten anzeigen",
                     key="home_patient_data",
-                    use_container_width=True,
+                    width = "stretch",
                     type="primary"
                 ):
                     patient_id = st.session_state.get("person_id")
@@ -141,10 +141,10 @@ class App:
                 if st.button(
                     "🚪 Logout",
                     key="home_patient_logout",
-                    use_container_width=True,
+                    width = "stretch",
                     type="secondary"
                 ):
-                    logout(force=True)
+                    manager.logout(force=True)
 
     def show_notes(self):
         st.button("⬅ Zurück", key="notes_back", on_click=Navigation.go_home)
@@ -262,7 +262,7 @@ class App:
             self.person_manager.persons.append(new_person)
             Person.save_persons(self.person_manager.persons)
 
-            username, password = create_patient_account(new_person)
+            username, password = manager.create_patient_account(new_person)
             st.success(
                 f"✅ {new_person.get_full_name()} wurde gespeichert.\nLogin: {username}\nPasswort: {password}"
             )
@@ -457,7 +457,12 @@ class App:
                                 label_a="Test A",
                                 label_b="Test B",
                             )
-                            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": True})
+                            config = {
+                                "scrollZoom": False,
+                                "modeBarButtonsToRemove": ["select2d", "lasso2d", "zoom2d", "autoScale2d", "resetScale2d"],
+                                "displaylogo": False,
+                            }
+                            st.plotly_chart(fig, use_container_width=True, config=config)
 
                             selected_metrics = get_comparable_metrics()
                             metrics_a = {metric: get_metric_value(person, selected_test_a, metric) for metric in selected_metrics}
@@ -537,7 +542,12 @@ class App:
                                 label_b="Test B",
                                 title="Vergleich der 2 Tests",
                             )
-                            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": True})
+                            config = {
+                                "scrollZoom": False,
+                                "modeBarButtonsToRemove": ["select2d", "lasso2d", "zoom2d", "autoScale2d", "resetScale2d"],
+                                "displaylogo": False,
+                            }
+                            st.plotly_chart(fig, use_container_width=True, config=config)
                         except Exception as exc:
                             st.error(f"Der Vergleich konnte nicht erstellt werden: {exc}")
 
@@ -640,9 +650,9 @@ class App:
 
         SessionManager.init()
 
-        if not login():
+        if not manager.login():
             st.stop()
-        logout()
+        manager.logout()
 
         col1, col2 = st.columns([2, 1])
         with col2:

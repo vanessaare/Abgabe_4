@@ -1,12 +1,12 @@
 import os
 import datetime
 import streamlit as st
-from backend.person import Person
-from backend.loader import load_test
-from backend.funktionen.hrv import calculate_hrv_rmssd
-from frontend.login import login, logout, create_patient_account
-from backend.funktionen.filter_persons import filter_persons
-from backend.funktionen.notizen import hole_notizen, notiz_hinzufuegen
+from backend.models.person import Person
+from backend.services.loader import load_test
+from backend.utils.hrv import calculate_hrv_rmssd
+from frontend.Login.login import manager
+from backend.utils.filter_persons import filter_persons
+from backend.services.notes import hole_notizen, notiz_hinzufuegen
 
 persons = Person.load_persons()
 
@@ -171,7 +171,7 @@ def add_person_form():
         new_person = Person(new_id, int(dob), firstname, lastname, pic_path, [], gender)
         persons.append(new_person)
         Person.save_persons(persons)
-        username, password = create_patient_account(new_person)
+        username, password = manager.create_patient_account(new_person)
 
         st.success(f"✅ {new_person.get_full_name()} wurde gespeichert.\nLogin: {username}\nPasswort: {password}")
         st.rerun()
@@ -270,7 +270,12 @@ def run_analysis(person, test_nr):
 
         try:
             fig = ekg.plot_with_peaks_window(start_sec / 60, (start_sec + window_sec) / 60)
-            st.plotly_chart(fig, use_container_width=True, key=f"ekg_{start_sec}")
+            config = {
+                "scrollZoom": False,
+                "modeBarButtonsToRemove": ["select2d", "lasso2d", "zoom2d", "autoScale2d", "resetScale2d"],
+                "displaylogo": False,
+            }
+            st.plotly_chart(fig, use_container_width=True, key=f"ekg_{start_sec}", config=config)
         except Exception as e:
             st.error(f"Plot Fehler: {e}")
 
@@ -391,9 +396,9 @@ def main():
     """Steuert die Navigation zwischen den verschiedenen Seiten der Anwendung basierend auf dem aktuellen Status in der Session."""
 
     init_session()
-    if not login():
+    if not manager.login():
         st.stop()
-    logout()
+    manager.logout()
 
     st.sidebar.write(
         f"Angemeldet als: {st.session_state.username}")
