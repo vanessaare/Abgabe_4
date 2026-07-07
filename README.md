@@ -32,13 +32,12 @@ abhängig von der Rolle jeweils nur die passenden Funktionen und Daten an.
 
 ## Funktionen
 
-| Bereich | Beschreibung |
 | 🔐 **Login & Rollen** | Anmeldung für `admin`, `doctor` und `patient` mit SHA-256-gehashten Passwörtern und automatischer Migration alter Klartext-Passwörter |
 | 🧑‍🤝‍🧑 **Patientenverwaltung** | Anlegen, Suchen, Bearbeiten und Löschen von Patient*innenprofilen inkl. Profilbild |
 | 📤 **EKG-Upload** | Hinzufügen neuer Tests im Format `.txt` (Rohsignal) oder `.fit` (Aktivitätsdaten mit synthetisiertem EKG) |
 | 📊 **Analyse** | Automatische Peak-Erkennung, Herzfrequenz- und HRV(RMSSD)-Berechnung sowie interaktive Zeitreihen-Plots |
 | ↔️ **Vergleichsansicht** | Überlagerung zweier Tests — desselben oder zweier verschiedener Patient*innen — mit Zeitfenster-Slider und Kennzahlenvergleich |
-| 📝 **Notizen** | Persönliche, benutzerbezogene Notizen anlegen und löschen |
+| 📝 **Notizen** | Persönliche Notizen anlegen und löschen |
 | 🔑 **Automatische Zugänge** | Für neu angelegte Patient*innen wird automatisch ein Zugang samt Passwort generiert |
 
 ## Screenshots
@@ -107,8 +106,6 @@ Abgabe_4/
    cd Abgabe_4
 
 2. Abhängigkeiten installieren (idealerweise in einer virtuellen Umgebung)
-   python -m venv .venv
-   source .venv/bin/activate        # Windows: .venv\Scripts\activate
    pip install -r requirements.txt
 
 3. Anwendung starten
@@ -130,7 +127,7 @@ Abgabe_4/
 
 ### Passwort-Logik für automatisch angelegte Patientenkonten
 Format: erste 3 Buchstaben Vorname + erste 3 Buchstaben Nachname + letzte 2 Ziffern Geburtsjahr
-(z. B. *Anne Mayer, geb. 1985* → `annmay85`). Das generierte Passwort wird beim Anlegen einmalig im
+(z. B. *Anne Mayer, geb. 2001* → `annmay01`). Das generierte Passwort wird beim Anlegen einmalig im
 Klartext angezeigt und danach ausschließlich gehasht gespeichert.
 
 ## Datenmodell
@@ -147,11 +144,3 @@ Klartext angezeigt und danach ausschließlich gehasht gespeichert.
 - Passwörter werden mit `hashlib.sha256` gehasht in `data/users.json` gespeichert.
 - Bestehende Klartext-Passwörter werden beim ersten erfolgreichen Login automatisch migriert.
 - Zugriff auf Bearbeitungs- und Upload-Funktionen ist auf die Rollen `admin` und `doctor` beschränkt.
-
-## Bekannte Einschränkungen & Ausblick
-
-- Passwort-Reset-Funktion für Patient*innen
-- Weitere EKG-Import-Formate
-- Erweiterte Vergleichs- und Trendvisualisierungen über mehrere Tests hinweg
-- Optimierte mobile Darstellung
-- Bereinigung der doppelten Modulstruktur (`backend/` vs. `backend/module_klassen/`)
