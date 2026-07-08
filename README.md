@@ -173,31 +173,61 @@ Abgabe_4/
 ## Nutzung
 
 ### Rolle `admin` / `doctor`
+
+Benutzer mit den Rollen **Admin** und **Doctor** können folgende Funktionen nutzen:
+
 - Patient*innen anlegen, suchen, bearbeiten und löschen
 - Neue EKG-Tests hochladen (`.txt` oder `.fit`)
-- EKG-Signale analysieren (Peaks, Herzfrequenz, HRV)
-- Zwei Tests vergleichen — desselben Patienten oder zweier verschiedener Patient*innen
-
-### Rolle `patient`
-- Eigene EKG-Daten und Analysen einsehen (nur lesend)
-- Zwei eigene Tests miteinander vergleichen
-- Persönliche Notizen anlegen und löschen
+- EKG-Signale analysieren (Peak-Erkennung, Herzfrequenz, HRV)
+- Zwei Tests desselben oder verschiedener Patient*innen vergleichen
+- Patientendaten und Auswertungen einsehen
+- Persönliche Notizen anlegen
 - Direkter Logout über die Startseite
 
-### Passwort-Logik für automatisch angelegte Patientenkonten
+### Rolle `patient`
 
-Beim Anlegen eines neuen Patient*innenkontos wird automatisch ein Passwort nach folgendem Schema generiert:
+Patient*innen haben ausschließlich Zugriff auf die eigenen Daten:
 
-| Bestandteil | Beispiel |
-|--------------|----------|
-| Erste 3 Buchstaben des Vornamens | `ann` |
-| Erste 3 Buchstaben des Nachnamens | `may` |
-| Letzte 2 Ziffern des Geburtsjahres | `01` |
+- Eigene EKG-Daten und Analysen einsehen (nur lesender Zugriff)
+- Zwei eigene EKG-Tests miteinander vergleichen
+- Direkter Logout über die Startseite
 
-**Beispiel:**  
-*Anne Mayer (geb. 2001)* → **`annmay01`**
+### Benutzerverwaltung und Passwort-Logik
 
-Das Passwort wird beim Erstellen des Kontos **einmalig im Klartext angezeigt** und anschließend ausschließlich als **SHA-256-Hash** gespeichert.
+Die Anwendung unterscheidet zwischen den drei Rollen **Admin**, **Doctor** und **Patient**.
+
+- **Admin-Konten:**  
+  Admin-Benutzer werden direkt im Code bzw. in der Benutzerverwaltung angelegt und besitzen vollständige Verwaltungsrechte.
+  Für Testzwecke ist aktuell ein vorkonfiguriertes Administratorkonto vorhanden:
+
+  | Rolle | Benutzername | Passwort |
+  |------|--------------|----------|
+  | Admin | `admin` | `admin123` |
+
+
+- **Doctor-Konten:**  
+  Arztkonten können ausschließlich durch den Admin direkt im Code angelegt werden. Eine Erstellung über die Benutzeroberfläche ist nicht vorgesehen.  
+  Aktuell ist ein vorkonfiguriertes Arztkonto vorhanden:
+  
+  | Rolle | Benutzername | Passwort |
+  |------|--------------|----------|
+  | Doctor | `doctor1` | `doctor123` |
+
+- **Patienten-Konten:**  
+  Patientenkonten werden automatisch beim Anlegen eines neuen Patientenprofils erstellt. Dabei wird ein Passwort nach folgendem Schema generiert:
+
+   | Bestandteil | Beispiel |
+   |--------------|----------|
+   | Erste 3 Buchstaben des Vornamens | `ann` |
+   | Erste 3 Buchstaben des Nachnamens | `may` |
+   | Letzte 2 Ziffern des Geburtsjahres | `01` |
+
+   **Beispiel:**  
+   *Anne Mayer (geb. 2001)* → **`annmay01`**
+
+   Das Passwort wird beim Erstellen des Kontos **einmalig im Klartext angezeigt** und anschließend ausschließlich als **SHA-256-Hash** gespeichert.
+
+
 
 ## Datenmodell
 
