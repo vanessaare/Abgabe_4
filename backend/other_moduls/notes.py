@@ -2,6 +2,7 @@ from datetime import datetime
 import json
 import os
 from typing import List, Dict
+import streamlit as st
 
 DATEI = "data/notes.json"
 
@@ -59,3 +60,27 @@ def notiz_loeschen(username: str, index: int) -> bool:
     notizen[username] = user_notes
     speichere_notizen(notizen)
     return True
+
+def show_notes():
+    """Rendert eine einfache Notizen-Seite pro angemeldetem Benutzer."""
+    st.header("Notizen")
+    username = st.session_state.get("username") or "guest"
+
+    notes = hole_notizen(username)
+
+    if notes:
+        st.subheader("Vorhandene Notizen")
+        for n in notes:
+            st.write(f"- {n.get('datum')} — {n.get('text')}")
+    else:
+        st.info("Keine Notizen vorhanden.")
+
+    st.subheader("Neue Notiz hinzufügen")
+    text = st.text_area("Notiz")
+    if st.button("Speichern"):
+        if not text.strip():
+            st.error("Notiz ist leer.")
+        else:
+            notiz_hinzufuegen(username, text.strip())
+            st.success("Notiz gespeichert.")
+            st.rerun()

@@ -84,8 +84,10 @@ class LoginManager:
 
         if not st.session_state.logged_in:
             links, mitte, rechts = st.columns([1, 2, 1])
+            with rechts:
+                st.image("data/images/Logo_EKGApp.png", width=300)
             with mitte:
-                st.image("data/images/Logo_EKGApp.png", width=450)
+    
                 st.markdown("<h2 style='text-align:center;'>Willkommen bei CardioCare</h2>", unsafe_allow_html=True)
                 st.markdown("<p style='text-align:center; color:gray;'>Sicherer Zugriff auf Ihre Gesundheitsdaten</p>", unsafe_allow_html=True)
 

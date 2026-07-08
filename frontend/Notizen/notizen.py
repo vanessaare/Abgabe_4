@@ -22,3 +22,5 @@ def delete_note(index: int) -> bool:
     """
     username = st.session_state.get("username") or "guest"
     return notiz_loeschen(username, index)
+
+

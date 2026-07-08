@@ -6,7 +6,6 @@ from backend.other_moduls.loader import load_test
 from backend.ekg_moduls.hrv import calculate_hrv_rmssd
 from frontend.Login.login import manager
 from backend.other_moduls.filter_persons import filter_persons
-from backend.other_moduls.notes import hole_notizen, notiz_hinzufuegen
 
 persons = Person.load_persons()
 
@@ -361,66 +360,3 @@ def add_test_form(person):
         Person.save_persons(persons)
         st.success(f"✅ Test {new_id} gespeichert ({ext.upper()}).")
         st.rerun()
-
-
-# --- Notizen ---
-
-def show_notes():
-    """Rendert eine einfache Notizen-Seite pro angemeldetem Benutzer."""
-    st.header("Notizen")
-    username = st.session_state.get("username") or "guest"
-
-    notes = hole_notizen(username)
-
-    if notes:
-        st.subheader("Vorhandene Notizen")
-        for n in notes:
-            st.write(f"- {n.get('datum')} — {n.get('text')}")
-    else:
-        st.info("Keine Notizen vorhanden.")
-
-    st.subheader("Neue Notiz hinzufügen")
-    text = st.text_area("Notiz")
-    if st.button("Speichern"):
-        if not text.strip():
-            st.error("Notiz ist leer.")
-        else:
-            notiz_hinzufuegen(username, text.strip())
-            st.success("Notiz gespeichert.")
-            st.rerun()
-
-
-# --- Router ---
-
-def main():
-    """Steuert die Navigation zwischen den verschiedenen Seiten der Anwendung basierend auf dem aktuellen Status in der Session."""
-
-    init_session()
-    if not manager.login():
-        st.stop()
-    manager.logout()
-
-    st.sidebar.write(
-        f"Angemeldet als: {st.session_state.username}")
-    
-    page = st.session_state.page
-    if page == "home":
-        home()
-
-    elif page == "select":
-        select_person()
-
-    elif page == "notes":
-        show_notes()
-
-    elif page == "analysis":
-        person = st.session_state.selected_person
-        if person is None:
-            st.session_state.page = "select"
-            st.rerun()
-        show_person(person)
-
-        if person.has_ekg_data() and not st.session_state.get("edit_mode") and not st.session_state.get("add_test_mode"):
-            st.subheader("Analyse durchführen")
-            test_nr = select_test_nr(person)
-            run_analysis(person, test_nr)
