@@ -1,7 +1,7 @@
 import streamlit as st 
-from backend.funktionen.loader import load_test
-from backend.module_klassen.person import Person
-from backend.utils.hrv import calculate_hrv_rmssd
+from backend.other_moduls.loader import load_test
+from backend.other_moduls.person import Person
+from backend.ekg_moduls.hrv import calculate_hrv_rmssd
 # --- Analyse-Verwaltung ---
 
 class AnalysisManager:

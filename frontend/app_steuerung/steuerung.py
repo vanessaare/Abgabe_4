@@ -2,10 +2,10 @@
 import datetime
 import streamlit as st
 
-from backend.module_klassen.person import Person
+from backend.other_moduls.person import Person
 from frontend.Login.login import manager
 
-from frontend.app_steuerung import person_manager
+from frontend.ekg_plot import person_manager
 from frontend.ekg_plot.analysis_manager import AnalysisManager
 from frontend.app_steuerung.navigation import Navigation
 from frontend.app_steuerung.session import SessionManager

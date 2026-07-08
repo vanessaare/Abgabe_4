@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import plotly.graph_objects as go
-from backend.funktionen.loader import load_test
+from backend.other_moduls.loader import load_test
 
 # --- Metriken & Datenextraktion ---
 

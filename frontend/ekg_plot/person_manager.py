@@ -1,8 +1,8 @@
 import streamlit as st
 
-from backend.module_klassen.person import Person
+from backend.other_moduls.person import Person
 from frontend.Login.login import manager
-from backend.utils.filter_persons import filter_persons
+from backend.other_moduls.filter_persons import filter_persons
 
 # --- Personen-Verwaltung ---
 

@@ -1,5 +1,5 @@
-from backend.module_klassen.ekgdata import EKGdata
-from backend.module_klassen.fitdata import FITdata
+from backend.ekg_moduls.ekgdata import EKGdata
+from backend.ekg_moduls.fitdata import FITdata
 
 
 def load_test(test_dict: dict):

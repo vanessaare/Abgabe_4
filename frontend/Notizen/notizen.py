@@ -1,5 +1,5 @@
 import streamlit as st
-from backend.funktionen.notes import hole_notizen, notiz_hinzufuegen, notiz_loeschen
+from backend.other_moduls.notes import hole_notizen, notiz_hinzufuegen, notiz_loeschen
 from typing import List, Dict
 
 

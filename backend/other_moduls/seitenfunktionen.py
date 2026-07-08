@@ -1,12 +1,12 @@
 import os
 import datetime
 import streamlit as st
-from backend.module_klassen.person import Person
-from backend.funktionen.loader import load_test
-from backend.utils.hrv import calculate_hrv_rmssd
+from backend.other_moduls.person import Person
+from backend.other_moduls.loader import load_test
+from backend.ekg_moduls.hrv import calculate_hrv_rmssd
 from frontend.Login.login import manager
-from backend.utils.filter_persons import filter_persons
-from backend.funktionen.notes import hole_notizen, notiz_hinzufuegen
+from backend.other_moduls.filter_persons import filter_persons
+from backend.other_moduls.notes import hole_notizen, notiz_hinzufuegen
 
 persons = Person.load_persons()
 
@@ -275,7 +275,7 @@ def run_analysis(person, test_nr):
                 "modeBarButtonsToRemove": ["select2d", "lasso2d", "zoom2d", "autoScale2d", "resetScale2d"],
                 "displaylogo": False,
             }
-            st.plotly_chart(fig, use_container_width=True, key=f"ekg_{start_sec}", config=config)
+            st.plotly_chart(fig, width='stretch', key=f"ekg_{start_sec}", config=config)
         except Exception as e:
             st.error(f"Plot Fehler: {e}")
 
