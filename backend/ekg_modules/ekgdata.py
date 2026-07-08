@@ -1,7 +1,7 @@
 import pandas as pd
 import plotly.express as px
 import numpy as np
-from backend.ekg_moduls.peak_detection import peak_detection
+from backend.ekg_modules.peak_detection import peak_detection
 import plotly.graph_objects as go
 
 

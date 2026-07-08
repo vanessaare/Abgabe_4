@@ -1,11 +1,11 @@
 import os
 import datetime
 import streamlit as st
-from backend.other_moduls.person import Person
-from backend.other_moduls.loader import load_test
-from backend.ekg_moduls.hrv import calculate_hrv_rmssd
+from backend.other_modules.person import Person
+from backend.other_modules.loader import load_test
+from backend.ekg_modules.hrv import calculate_hrv_rmssd
 from frontend.Login.login import manager
-from backend.other_moduls.filter_persons import filter_persons
+from backend.other_modules.filter_persons import filter_persons
 
 persons = Person.load_persons()
 

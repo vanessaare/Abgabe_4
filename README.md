@@ -1,6 +1,5 @@
 # 🫀 CardioCare — Digitale EKG-Datenbank
 
-**Eine rollenbasierte Streamlit-Anwendung zur Verwaltung, Analyse und Visualisierung von EKG-Daten**
 *Entwickelt von Melanie Pfusterer, Lisa Raffler & Vanessa Reich*
 
 ---
@@ -16,34 +15,87 @@
 - [Nutzung](#nutzung)
 - [Datenmodell](#datenmodell)
 - [Sicherheit](#sicherheit)
-- [Bekannte Einschränkungen & Ausblick](#bekannte-einschränkungen--ausblick)
+
 
 ---
 
 ## Über das Projekt
 
-**CardioCare** ist eine digitale EKG-Datenbank für medizinisches Personal und Patient*innen. Die Anwendung
+**CardioCare** ist eine digitale EKG-Webanwendung für medizinisches Personal und Patient*innen. Die Anwendung
 ermöglicht die zentrale Verwaltung von Patientenprofilen, den Upload und die Auswertung von EKG-Aufzeichnungen
 (als `.txt`-Rohdaten oder `.fit`-Aktivitätsdateien) sowie den visuellen Vergleich mehrerer Tests inklusive
 automatischer Peak- und HRV-Berechnung.
 
-Die App unterscheidet strikt zwischen drei Rollen — **Admin**, **Doctor** und **Patient** — und zeigt
+Die App unterscheidet strikt zwischen drei Rollen: **Admin**, **Doctor** und **Patient**. Sie zeigt
 abhängig von der Rolle jeweils nur die passenden Funktionen und Daten an.
 
 ## Funktionen
 
+| Funktion | Beschreibung |
+|----------|--------------|
 | 🔐 **Login & Rollen** | Anmeldung für `admin`, `doctor` und `patient` mit SHA-256-gehashten Passwörtern und automatischer Migration alter Klartext-Passwörter |
 | 🧑‍🤝‍🧑 **Patientenverwaltung** | Anlegen, Suchen, Bearbeiten und Löschen von Patient*innenprofilen inkl. Profilbild |
-| 📤 **EKG-Upload** | Hinzufügen neuer Tests im Format `.txt` (Rohsignal) oder `.fit` (Aktivitätsdaten mit synthetisiertem EKG) |
+| 📤 **EKG-Upload** | Hinzufügen neuer Tests im Format `.txt` oder `.fit` |
 | 📊 **Analyse** | Automatische Peak-Erkennung, Herzfrequenz- und HRV(RMSSD)-Berechnung sowie interaktive Zeitreihen-Plots |
-| ↔️ **Vergleichsansicht** | Überlagerung zweier Tests — desselben oder zweier verschiedener Patient*innen — mit Zeitfenster-Slider und Kennzahlenvergleich |
+| ↔️ **Vergleichsansicht** | Vergleich zweier Tests mit Kennzahlen und Zeitfenster |
 | 📝 **Notizen** | Persönliche Notizen anlegen und löschen |
-| 🔑 **Automatische Zugänge** | Für neu angelegte Patient*innen wird automatisch ein Zugang samt Passwort generiert |
+| 🔑 **Automatische Zugänge** | Für neue Patient*innen kann ein Arzt oder Admin Benutzerkonten erstellen |
+
 
 ## Screenshots
 
-<img src="data/images/Auswahl_Patienten.png" alt="Patientenauswahl" width="45%">
-<img src="data/images/PatientenSeite.png" alt="Patientenansicht" width="45%">
+### Arztansicht
+
+<table>
+<tr>
+<td align="center">
+<b>Login</b><br>
+<img src="data/images/login_screenshot.jpeg" width="350">
+</td>
+
+<td align="center">
+<b>Startseite des Arztes</b><br>
+<img src="data/images/startseite_doctor_screenshot.jpeg" width="350">
+</td>
+</tr>
+
+<tr>
+<td align="center">
+<b>Patientenübersicht mit Analyse und Vergleich </b><br>
+<img src="data/images/Übersicht_doctor_screenshot.jpeg" width="350">
+</td>
+
+<td align="center">
+<b>Patienten hinzufügen</b><br>
+<img src="data/images/patienthinzufügen_doctor_screenshot.jpeg" width="350">
+</td>
+</tr>
+
+<tr>
+<td align="center">
+<b>Notizen</b><br>
+<img src="data/images/notizen_doctor_screenshot.jpeg" width="350">
+</td>
+
+<td></td>
+</tr>
+<table>
+
+### Patientenansicht
+
+<table>
+<tr>
+<td align="center">
+<b>Startseite der Patienten</b><br>
+<img src="data/images/startseite_patient_screenshot.jpeg" width="350">
+</td>
+
+<td align="center">
+<b>Dateneinsicht der Patienten</b><br>
+<img src="data/images/dateneinsicht_patient_screenshot.jpeg" width="350">
+</td>
+</tr>
+</table>
 
 ## Tech-Stack
 
@@ -57,59 +109,66 @@ abhängig von der Rolle jeweils nur die passenden Funktionen und Daten an.
 Die vollständige Liste aller Abhängigkeiten befindet sich in [`requirements.txt`](requirements.txt).
 
 ## Projektstruktur
-
+```text
 Abgabe_4/
 ├── main.py                        # Einstiegspunkt der Streamlit-App
 ├── requirements.txt
 ├── backend/
-│   ├── module_klassen/
-│   │   ├── person.py               # Klasse Person (Profil, EKG-Tests, TinyDB-Anbindung)
+│   ├── ekg_modules/
+│   │   ├── hrv.py                  # HRV-RMSSD-Berechnung
 │   │   ├── ekgdata.py              # Klasse EKGdata: Laden, Peaks, HR/HRV, Plots (.txt)
+│   │   ├── ekg_utils.py           # Funktionen zum korrekten Darstellen des EKG-Plots
+│   │   ├── peak_detection.py       # Peak-Erkennung im Rohsignal
 │   │   └── fitdata.py              # Klasse FITdata: Laden & Aufbereitung von .fit-Dateien
-│   ├── funktionen/
-│   │   ├── loader.py
-│   │   └── notes.py
-│   └── utils/
-│       ├── peak_detection.py       # Peak-Erkennung im Rohsignal
-│       ├── hrv.py                  # HRV-RMSSD-Berechnung
+│   └── other_modules/
+│       ├── loader.py
+│       ├── person.py               # Klasse Person (Profil, EKG-Tests, TinyDB-Anbindung)
 │       ├── filter_persons.py
-│       └── seitenfunktionen.py
+│       └── notes.py
 ├── frontend/
 │   ├── app_steuerung/
 │   │   ├── steuerung.py            # Haupt-UI-Controller (Klasse App) — Seiten & Router
 │   │   ├── navigation.py           # Seitennavigation
-│   │   ├── person_manager.py       # Laden/Filtern/Löschen von Personen
+│   │   ├── seitenfunktionen.py     # Seitenfunktionen zur App-Steuerung
+│   │   ├── person_manager.py       # Organisiert angelegte Patient:innen    
 │   │   └── session.py              # Session-State-Initialisierung
 │   ├── ekg_plot/
 │   │   ├── analysis_manager.py     # Steuert die Auswertungs-Tabs
-│   │   ├── compare.py              # Overlay-Plots & Kennzahlenvergleich
+│   │   ├── compare.py              # Overlay-Plots & Kennzahlenvergleich    
 │   │   └── utlispatient.py         # Hilfsfunktionen für Vergleichspatienten
 │   ├── Login/
 │   │   └── login.py                # LoginManager: Login/Logout, Passwort-Hashing
 │   └── Notizen/
 │       └── notizen.py              # Laden/Speichern/Löschen von Notizen
-├── funktionen/
-│   └── hrv.py
 └── data/
     ├── users.json                  # Benutzerkonten (Rollen, gehashte Passwörter)
     ├── persons.db.json             # TinyDB-Datenbank mit Patient*innen & EKG-Tests
-    ├── notes.json                  # Notizen je Benutzer
+    ├── notes.json                  # Notizen des Arztes
     ├── ekg_data/                   # Rohdaten (.txt / .fit) der EKG-Tests
     └── images/                     # Profilbilder, Logo, Screenshots
+```
 
 ## Installation
 
 **Voraussetzung:** Python 3.11+
 
 1. Repository klonen und in das Projektverzeichnis wechseln
+```bash
    git clone https://github.com/vanessaare/Abgabe_4.git
+```
+```bash
    cd Abgabe_4
+```
 
 2. Abhängigkeiten installieren (idealerweise in einer virtuellen Umgebung)
+```bash
    pip install -r requirements.txt
+   ```
 
 3. Anwendung starten
+```bash
    streamlit run main.py
+   ```
 
 ## Nutzung
 
@@ -126,21 +185,27 @@ Abgabe_4/
 - Direkter Logout über die Startseite
 
 ### Passwort-Logik für automatisch angelegte Patientenkonten
-Format: erste 3 Buchstaben Vorname + erste 3 Buchstaben Nachname + letzte 2 Ziffern Geburtsjahr
-(z. B. *Anne Mayer, geb. 2001* → `annmay01`). Das generierte Passwort wird beim Anlegen einmalig im
-Klartext angezeigt und danach ausschließlich gehasht gespeichert.
+
+Beim Anlegen eines neuen Patient*innenkontos wird automatisch ein Passwort nach folgendem Schema generiert:
+
+| Bestandteil | Beispiel |
+|--------------|----------|
+| Erste 3 Buchstaben des Vornamens | `ann` |
+| Erste 3 Buchstaben des Nachnamens | `may` |
+| Letzte 2 Ziffern des Geburtsjahres | `01` |
+
+**Beispiel:**  
+*Anne Mayer (geb. 2001)* → **`annmay01`**
+
+Das Passwort wird beim Erstellen des Kontos **einmalig im Klartext angezeigt** und anschließend ausschließlich als **SHA-256-Hash** gespeichert.
 
 ## Datenmodell
 
-| Datei | Inhalt |
-| `data/users.json` | Benutzername → `{password (SHA-256), role, person_id?}` |
-| `data/persons.db.json` | TinyDB-Tabelle mit `id`, `firstname`, `lastname`, `date_of_birth`, `gender`, `picture_path`, `ekg_tests[]` |
-| `data/notes.json` | Notizen je Benutzer, z. B. `{"doctor1": [{"datum": "03.07.2026", "text": "..."}]}` |
-| `data/ekg_data/*.txt` | Tab-getrennte Rohsignale (`Messwerte in mV`, `Zeit in ms`) |
-| `data/ekg_data/*.fit` | Garmin-/ANT-FIT-Aktivitätsdateien mit Herzfrequenzverlauf |
 
-## Sicherheit
-
-- Passwörter werden mit `hashlib.sha256` gehasht in `data/users.json` gespeichert.
-- Bestehende Klartext-Passwörter werden beim ersten erfolgreichen Login automatisch migriert.
-- Zugriff auf Bearbeitungs- und Upload-Funktionen ist auf die Rollen `admin` und `doctor` beschränkt.
+| Datei | Beschreibung |
+|--------|--------------|
+| `data/users.json` | Benutzerkonten mit **Benutzername**, **Passwort-Hash (SHA-256)**, **Rolle** und optionaler **Personen-ID** |
+| `data/persons.db.json` | TinyDB-Datenbank mit Patient*innenprofilen (`id`, `firstname`, `lastname`, `date_of_birth`, `gender`, `picture_path`) sowie den zugehörigen `ekg_tests` |
+| `data/notes.json` | Benutzerbezogene Notizen (z. B. Datum und Notiztext) |
+| `data/ekg_data/*.txt` | Tabulatorgetrennte EKG-Rohdaten (`Messwerte in mV`, `Zeit in ms`) |
+| `data/ekg_data/*.fit` | Garmin-/ANT-FIT-Dateien mit Aktivitäts- bzw. Herzfrequenzdaten |

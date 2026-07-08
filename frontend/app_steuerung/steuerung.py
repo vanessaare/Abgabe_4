@@ -2,10 +2,10 @@
 import datetime
 import streamlit as st
 
-from backend.other_moduls.person import Person
+from backend.other_modules.person import Person
 from frontend.Login.login import manager
 
-from frontend.ekg_plot import person_manager
+from frontend.app_steuerung import person_manager
 from frontend.ekg_plot.analysis_manager import AnalysisManager
 from frontend.app_steuerung.navigation import Navigation
 from frontend.app_steuerung.session import SessionManager
@@ -462,7 +462,7 @@ class App:
                                 "modeBarButtonsToRemove": ["select2d", "lasso2d", "zoom2d", "autoScale2d", "resetScale2d"],
                                 "displaylogo": False,
                             }
-                            st.plotly_chart(fig, use_container_width=True, config=config)
+                            st.plotly_chart(fig, width='stretch', config=config)
 
                             selected_metrics = get_comparable_metrics()
                             metrics_a = {metric: get_metric_value(person, selected_test_a, metric) for metric in selected_metrics}
@@ -547,7 +547,7 @@ class App:
                                 "modeBarButtonsToRemove": ["select2d", "lasso2d", "zoom2d", "autoScale2d", "resetScale2d"],
                                 "displaylogo": False,
                             }
-                            st.plotly_chart(fig, use_container_width=True, config=config)
+                            st.plotly_chart(fig, width="stretch", config=config)
                         except Exception as exc:
                             st.error(f"Der Vergleich konnte nicht erstellt werden: {exc}")
 
